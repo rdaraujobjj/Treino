@@ -212,6 +212,8 @@ main{position:relative}
 </nav>
 <div id="modal" hidden></div>
 <div id="toast" role="status"></div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
 <script>
 const K="treino-semanal-v3",OLD="treino-semanal-v2";
 const CATS={"Jiu-Jitsu":"#3fb0c0","Luta livre":"#ff5a4d","Preparação física":"#ffb020","Cardio":"#3ddc84","Musculação":"#b38cff","Corrida":"#d9d9d9","Funcional":"#ff7ac6","Mobilidade":"#c9d65a","Outro":"#9a9a9a"};
@@ -228,6 +230,8 @@ const num=v=>parseFloat(String(v).replace(",","."))||0;
 const fm=m=>m>=60?Math.floor(m/60)+"h"+(m%60?pad(m%60):""):m+" min";
 const fd=k=>k.slice(8)+"/"+k.slice(5,7);
 let S,E=null,CB=null,T=null;
+const CFG=window.NF_CLOUD||{},CLOUD=!!(window.supabase&&/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")&&(CFG.key||"").length>20),sb=CLOUD?window.supabase.createClient(CFG.url,CFG.key):null;
+let U=null,READY=!CLOUD,SY=0,pt=null;
 let V={tab:"home",mode:"sem",week:mon(new Date()),sel:ds(new Date()),month:new Date(),open:null,ex:"",wi:7,mu:""};
 const done=k=>Object.values(S.log[k]||{}).filter(e=>e.s=="d");
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -242,9 +246,36 @@ function load(){
         S.plan[i].push(s);
         if(x.done){let k=ds(add(m,i));(S.log[k]=S.log[k]||{})[s.id]={s:"d",t:s.t,n:"",m:num(s.d),ex:[]}}
       }))}}catch(e){}
-  save();
+  store();
 }
-function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast("Não foi possível salvar neste aparelho. Faça um backup.")}}
+function store(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast("Não foi possível salvar neste aparelho. Faça um backup.")}}
+function save(){S.ts=Date.now();store();sched()}
+const hasData=()=>S.plan.some(a=>a.length)||Object.keys(S.log).length>0;
+function sched(){if(!CLOUD||!U)return;clearTimeout(pt);pt=setTimeout(push,1500)}
+function syText(){return SY>0?"Sincronizado às "+new Date(SY).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):SY<0?"Sem conexão: será enviado quando possível":"Ainda não sincronizado"}
+function setSync(){let e=$("#sy");if(e)e.textContent=syText()}
+async function push(){if(!CLOUD||!U)return;try{let{error}=await sb.from("app_state").upsert({user_id:U.id,data:S,updated_at:new Date().toISOString()});if(error)throw error;SY=Date.now()}catch(e){SY=-1}setSync()}
+async function pull(){
+  if(!CLOUD||!U)return;
+  try{
+    let{data,error}=await sb.from("app_state").select("data").eq("user_id",U.id).maybeSingle();
+    if(error)throw error;
+    let c=data&&data.data,lt=S.ts||0;
+    if(!c){if(hasData()){S.ts=lt||Date.now();store();await push()}else{SY=Date.now();setSync()}return}
+    if(!Array.isArray(c.plan)||c.plan.length!=7||typeof c.log!="object")throw 0;
+    let ct=c.ts||0;
+    if(ct>lt){if(hasData()&&!lt){try{localStorage.setItem(K+"-pre-nuvem",JSON.stringify(S))}catch(e){}}
+      S=c;S.uid=U.id;store();render();SY=Date.now();setSync();toast("Dados atualizados da nuvem")}
+    else if(lt>ct)await push();
+    else{SY=Date.now();setSync()}
+  }catch(e){SY=-1;setSync()}
+}
+function adopt(){if(S.uid&&S.uid!=U.id){try{localStorage.removeItem(K)}catch(e){}load()}S.uid=U.id;store()}
+async function boot(){if(!CLOUD)return;try{let{data}=await sb.auth.getSession();U=data.session?data.session.user:null}catch(e){}READY=true;if(U)adopt();render();pull()}
+function Login(){return `<section class="card" style="margin-top:40px;text-align:center"><img src="logo.png" alt="Norte Flow Jiu-Jitsu" width="96" style="border-radius:14px;background:#000"><h2 style="margin:12px 0 4px">Entrar</h2><p class="mu">Use o e-mail e a senha que você recebeu do professor.</p><label for="lg-e" style="text-align:left">E-mail</label><input id="lg-e" type="email" autocomplete="username" inputmode="email"><label for="lg-p" style="text-align:left">Senha</label><input id="lg-p" type="password" autocomplete="current-password"><div class="row"><button class="b pri" data-a="login">Entrar</button></div></section>`}
+function Conta(){
+  if(!CLOUD)return `<section class="card"><h3>Conta</h3><p class="mu">Nuvem desligada: os dados ficam só neste aparelho.</p></section>`;
+  return `<section class="card"><h3>Conta e nuvem</h3><p>${esc(U&&U.email)}</p><p class="mu" id="sy">${syText()}</p><div class="row"><button class="b" data-a="sync">Sincronizar agora</button><button class="b" data-a="logout">Sair</button></div><label for="np">Nova senha</label><input id="np" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres"><div class="row"><button class="b" data-a="pw">Trocar senha</button></div></section>`}
 function find(id){for(let i=0;i<7;i++){let x=S.plan[i].find(y=>y.id==id);if(x)return[i,x]}}
 function wk(m){let pl=0,dn=0,cn=0,min=0;
   for(let i=0;i<7;i++){pl+=S.plan[i].length;Object.values(S.log[ds(add(m,i))]||{}).forEach(e=>{if(e.s=="d"){dn++;min+=e.m}else cn++})}
@@ -367,7 +398,7 @@ function Ajustes(){
   return `<h1>Ajustes</h1>
   <section class="card"><label for="nm">Seu nome</label><input id="nm" value="${esc(S.name)}" placeholder="Como quer ser chamado?" maxlength="30" data-c="name"></section>
   <section class="card"><h3>Tema</h3><div class="seg" style="margin:0"><button data-a="theme" data-v="dark" aria-pressed="${S.theme!="light"}">Escuro</button><button data-a="theme" data-v="light" aria-pressed="${S.theme=="light"}">Claro</button></div></section>
-  <section class="card"><h3>Dados</h3><p class="mu">Tudo fica salvo neste aparelho. Faça backup de vez em quando.</p><div class="row"><button class="b" data-a="bk">Salvar backup</button><button class="b" data-a="rs">Restaurar backup</button></div><div class="row"><button class="b" data-a="exp">Exportar histórico</button><button class="b" data-a="wipe">Apagar tudo</button></div></section>`;
+  ${Conta()}<section class="card"><h3>Dados</h3><p class="mu">Tudo fica salvo neste aparelho. Faça backup de vez em quando.</p><div class="row"><button class="b" data-a="bk">Salvar backup</button><button class="b" data-a="rs">Restaurar backup</button></div><div class="row"><button class="b" data-a="exp">Exportar histórico</button><button class="b" data-a="wipe">Apagar tudo</button></div></section>`;
 }
 function Ed(){
   let x=E.x;
@@ -389,6 +420,8 @@ function render(){
   document.documentElement.dataset.theme=S.theme=="light"?"light":"dark";
   const themeColor=document.querySelector("meta[name=theme-color]");
   if(themeColor)themeColor.content=S.theme=="light"?"#eef3f4":"#000000";
+  if(CLOUD&&(!READY||!U)){$("#nav").hidden=true;$("#view").innerHTML=READY?Login():'<p class="mu" style="text-align:center;margin-top:80px">Carregando…</p>';return}
+  $("#nav").hidden=false;
   $("#view").innerHTML=(V.tab=="home"?"":'<img class="bc" src="logo.png" alt="Norte Flow Jiu-Jitsu">')+({home:Home,ag:Agenda,ev:Evol,aj:Ajustes})[V.tab]();
   $$("#nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.t==V.tab));
 }
@@ -441,15 +474,23 @@ const A={
     M(`<div class="sheet"><h2>Exportar histórico</h2><p class="mu">Copie e cole em uma planilha ou nota. Salvando como .csv, abre no Excel ou Google Planilhas.</p>${r.length>1?"":"<p>Ainda não há treinos registrados.</p>"}<textarea id="csv" rows="8" readonly>${esc(csv)}</textarea><div class="row"><button class="b" data-a="close">Fechar</button><button class="b pri" data-a="copy">Copiar</button></div></div>`)},
   copy:()=>{let t=$("#csv");t.select();let f=()=>{try{document.execCommand("copy");toast("Copiado")}catch(e){toast("Selecione o texto e copie")}};navigator.clipboard?navigator.clipboard.writeText(t.value).then(()=>toast("Copiado"),f):f()},
   bk:()=>{let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:"application/json"}));a.download="treino-backup-"+ds(new Date())+".json";document.body.appendChild(a);a.click();a.remove();toast("Backup salvo")},
-  rs:()=>{let i=document.createElement("input");i.type="file";i.accept=".json,application/json";i.onchange=()=>{let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let p=JSON.parse(r.result);if(!p||!Array.isArray(p.plan)||p.plan.length!=7||typeof p.log!="object")throw 0;ask("Substituir os dados atuais pelo backup de "+esc(f.name)+"?",()=>{S=p;save();V.tab="home";render();toast("Backup restaurado")})}catch(e){toast("Arquivo de backup inválido")}};r.readAsText(f)};i.click()},
+  rs:()=>{let i=document.createElement("input");i.type="file";i.accept=".json,application/json";i.onchange=()=>{let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let p=JSON.parse(r.result);if(!p||!Array.isArray(p.plan)||p.plan.length!=7||typeof p.log!="object")throw 0;ask("Substituir os dados atuais pelo backup de "+esc(f.name)+"?",()=>{S=p;if(U)S.uid=U.id;save();V.tab="home";render();toast("Backup restaurado")})}catch(e){toast("Arquivo de backup inválido")}};r.readAsText(f)};i.click()},
+  login:async()=>{let e=$("#lg-e").value.trim(),p=$("#lg-p").value;if(!e||!p)return toast("Informe e-mail e senha");
+    let{data,error}=await sb.auth.signInWithPassword({email:e,password:p});
+    if(error||!data.user)return toast(navigator.onLine?"E-mail ou senha incorretos":"Sem internet para entrar");
+    U=data.user;adopt();render();pull()},
+  logout:async()=>{try{await sb.auth.signOut()}catch(e){}U=null;render()},
+  sync:()=>{pull();toast("Sincronizando…")},
+  pw:async()=>{let v=$("#np").value;if(v.length<8)return toast("Use pelo menos 8 caracteres");let{error}=await sb.auth.updateUser({password:v});$("#np").value="";toast(error?"Não foi possível trocar a senha":"Senha trocada")},
   wb:d=>{V.wi=+d.i;render()},mu:d=>{V.mu=V.mu==d.m?"":d.m;render()},
-  wipe:()=>ask("Apagar cronograma, histórico e ajustes? Isso não pode ser desfeito.",()=>{try{localStorage.removeItem(K);localStorage.removeItem(OLD)}catch(e){}load();V.tab="home";render();toast("Dados apagados")})
+  wipe:()=>ask("Apagar cronograma, histórico e ajustes"+(CLOUD?" (inclusive na nuvem)":"")+"? Isso não pode ser desfeito.",()=>{try{localStorage.removeItem(K);localStorage.removeItem(OLD)}catch(e){}load();if(U)S.uid=U.id;save();V.tab="home";render();toast("Dados apagados")})
 };
 document.addEventListener("click",e=>{if(e.target.id=="modal")return closeM();let b=e.target.closest("[data-a]");if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset)});
 document.addEventListener("change",e=>{let t=e.target,c=t.dataset.c;if(!c)return;
   if(c=="name")S.name=t.value.trim();if(c=="goal")S.goal=Math.max(0,Math.floor(num(t.value)));if(c=="ex")V.ex=t.value;save();render()});
-document.addEventListener("keydown",e=>{if(e.key=="Escape"&&!$("#modal").hidden)closeM();if((e.key=="Enter"||e.key==" ")&&e.target.matches&&e.target.matches("g[data-a]")){e.preventDefault();A[e.target.dataset.a](e.target.dataset)}});
-load();render();
+document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.id=="lg-p"){A.login();return}if(e.key=="Escape"&&!$("#modal").hidden)closeM();if((e.key=="Enter"||e.key==" ")&&e.target.matches&&e.target.matches("g[data-a]")){e.preventDefault();A[e.target.dataset.a](e.target.dataset)}});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&U&&$("#modal").hidden)pull()});addEventListener("online",()=>{if(U)pull()});
+load();render();boot();
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
 </script>
 </body>

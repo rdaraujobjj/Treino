@@ -1,13 +1,14 @@
 /* Service Worker do TREINO - compatível com GitHub Pages em /Treino/ */
 const CACHE_PREFIX = "treino-";
-const CACHE_NAME = "treino-v5-norteflow";
+const CACHE_NAME = "treino-v6-nuvem";
 const CORE_FILES = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
-  "./logo.png"
+  "./logo.png",
+  "./config.js"
 ];
 
 self.addEventListener("install", event => {
@@ -34,6 +35,15 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
+  const keep = r => { if (r && r.ok) { const cp = r.clone(); caches.open(CACHE_NAME).then(c => c.put(request, cp)); } return r; };
+  if (url.hostname === "cdn.jsdelivr.net") {
+    event.respondWith(caches.match(request).then(c => c || fetch(request).then(keep)));
+    return;
+  }
+  if (url.origin === self.location.origin && url.pathname.endsWith("/config.js")) {
+    event.respondWith(fetch(request).then(keep).catch(() => caches.match(request)));
+    return;
+  }
   // Não intercepta requisições de outros domínios (fontes externas, por exemplo).
   if (url.origin !== self.location.origin) return;
   // Só controla arquivos dentro do escopo publicado do app.
