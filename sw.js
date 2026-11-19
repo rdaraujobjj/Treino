@@ -1,6 +1,6 @@
 /* Service Worker do TREINO - compatível com GitHub Pages em /Treino/ */
 const CACHE_PREFIX = "treino-";
-const CACHE_NAME = "treino-v2";
+const CACHE_NAME = "treino-v3-jiu";
 const CORE_FILES = [
   "./",
   "./index.html",
