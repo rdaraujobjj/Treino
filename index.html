@@ -212,7 +212,7 @@ main{position:relative}
 </nav>
 <div id="modal" hidden></div>
 <div id="toast" role="status"></div>
-<script src="config.js"></script>
+<script src="config.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
 <script>
 const K="treino-semanal-v3",OLD="treino-semanal-v2";
@@ -232,6 +232,7 @@ const fd=k=>k.slice(8)+"/"+k.slice(5,7);
 let S,E=null,CB=null,T=null;
 const CFG=window.NF_CLOUD||{},CLOUD=!!(window.supabase&&/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")&&(CFG.key||"").length>20),sb=CLOUD?window.supabase.createClient(CFG.url,CFG.key):null;
 let U=null,READY=!CLOUD,SY=0,pt=null;
+const VER="2026-11-19b",WHY=CLOUD?"":!window.supabase?"a biblioteca da nuvem não carregou":!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")?"a URL no config.js não está certa":"a chave no config.js não está certa";
 let V={tab:"home",mode:"sem",week:mon(new Date()),sel:ds(new Date()),month:new Date(),open:null,ex:"",wi:7,mu:""};
 const done=k=>Object.values(S.log[k]||{}).filter(e=>e.s=="d");
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -274,8 +275,8 @@ function adopt(){if(S.uid&&S.uid!=U.id){try{localStorage.removeItem(K)}catch(e){
 async function boot(){if(!CLOUD)return;try{let{data}=await sb.auth.getSession();U=data.session?data.session.user:null}catch(e){}READY=true;if(U)adopt();render();pull()}
 function Login(){return `<section class="card" style="margin-top:40px;text-align:center"><img src="logo.png" alt="Norte Flow Jiu-Jitsu" width="96" style="border-radius:14px;background:#000"><h2 style="margin:12px 0 4px">Entrar</h2><p class="mu">Use o e-mail e a senha que você recebeu do professor.</p><label for="lg-e" style="text-align:left">E-mail</label><input id="lg-e" type="email" autocomplete="username" inputmode="email"><label for="lg-p" style="text-align:left">Senha</label><input id="lg-p" type="password" autocomplete="current-password"><div class="row"><button class="b pri" data-a="login">Entrar</button></div></section>`}
 function Conta(){
-  if(!CLOUD)return `<section class="card"><h3>Conta</h3><p class="mu">Nuvem desligada: os dados ficam só neste aparelho.</p></section>`;
-  return `<section class="card"><h3>Conta e nuvem</h3><p>${esc(U&&U.email)}</p><p class="mu" id="sy">${syText()}</p><div class="row"><button class="b" data-a="sync">Sincronizar agora</button><button class="b" data-a="logout">Sair</button></div><label for="np">Nova senha</label><input id="np" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres"><div class="row"><button class="b" data-a="pw">Trocar senha</button></div></section>`}
+  if(!CLOUD)return `<section class="card"><h3>Conta</h3><p class="mu">Nuvem desligada: ${WHY}. Os dados ficam só neste aparelho.</p><p class="mu" style="font-size:12px">Versão ${VER}</p></section>`;
+  return `<section class="card"><h3>Conta e nuvem</h3><p>${esc(U&&U.email)}</p><p class="mu" id="sy">${syText()}</p><p class="mu" style="font-size:12px">Versão ${VER}</p><div class="row"><button class="b" data-a="sync">Sincronizar agora</button><button class="b" data-a="logout">Sair</button></div><label for="np">Nova senha</label><input id="np" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres"><div class="row"><button class="b" data-a="pw">Trocar senha</button></div></section>`}
 function find(id){for(let i=0;i<7;i++){let x=S.plan[i].find(y=>y.id==id);if(x)return[i,x]}}
 function wk(m){let pl=0,dn=0,cn=0,min=0;
   for(let i=0;i<7;i++){pl+=S.plan[i].length;Object.values(S.log[ds(add(m,i))]||{}).forEach(e=>{if(e.s=="d"){dn++;min+=e.m}else cn++})}
