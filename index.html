@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#050505">
+<meta name="theme-color" content="#060810">
 <meta name="application-name" content="TREINO">
 <meta name="description" content="Organize seus treinos, acompanhe sua evolução e registre seu histórico.">
 <link rel="manifest" href="./manifest.webmanifest">
@@ -134,6 +134,56 @@ input,select,textarea{background:var(--s2);border-color:var(--ln);border-radius:
 #toast{border:1px solid var(--ln)}
 @media(min-width:600px){main{padding-top:24px}.card{padding:20px}}
 
+
+/* TREINO CYBERPUNK UI — camada visual, sem alterar regras de treino */
+:root{--bg:#05060a;--s1:#0a0d15;--s2:#101625;--ln:#26334b;--ink:#edf6ff;--mu:#8b9bb4;--ac:#10cfff;--on:#02050a;--sh:0 0 26px rgba(0,196,255,.06);color-scheme:dark}
+:root[data-theme="light"]{--bg:#edf2f8;--s1:#fff;--s2:#e8eef7;--ln:#b8c9de;--ink:#121b2a;--mu:#5b6c84;--ac:#007fbd;--on:#fff;--sh:0 6px 22px rgba(18,65,110,.10);color-scheme:light}
+body{background:radial-gradient(ellipse at 50% -15%,rgba(15,92,163,.18),transparent 55%),var(--bg);font-family:Barlow,system-ui,sans-serif}
+main{padding-top:12px}
+.card{background:linear-gradient(145deg,rgba(11,16,27,.97),rgba(6,8,14,.98));border:1px solid #1d2c45;border-radius:17px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 0 22px rgba(0,180,255,.045);position:relative;overflow:hidden}
+:root[data-theme="light"] .card{background:linear-gradient(145deg,#fff,#f3f7fc)}
+h1{font-size:32px;letter-spacing:.04em;text-transform:uppercase}
+h2{letter-spacing:.03em}
+h3{color:#c8d9ef;letter-spacing:.12em;text-transform:uppercase}
+.b,.pb,.ib{border-radius:10px;transition:transform .15s,box-shadow .15s}
+.b{background:#111a2a;border-color:#2a3d5b;color:#d9edff}
+.b.pri,.pb{background:linear-gradient(110deg,#00b9ff,#2377ff);color:#020811;border:0;box-shadow:0 0 15px rgba(0,183,255,.28);font-weight:800}
+.b:active,.pb:active,.ib:active{transform:scale(.97)}
+.ib{background:#0c1422;border-color:#273954;color:#e8f4ff}
+.rf{stroke:#00c8ff;filter:drop-shadow(0 0 4px #00baff)}.rb{stroke:#1b2b41}.rt{fill:var(--ink)}
+.kp b{font-size:30px;color:#e9f8ff;text-shadow:0 0 12px rgba(0,195,255,.18)}
+.kp span{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.nx{border-left:2px solid #00c8ff!important;background:linear-gradient(90deg,rgba(0,190,255,.08),transparent);padding:12px 14px;border-radius:0 12px 12px 0}
+.seg,.dc,.mc,.ss,.bg{background:var(--s1);border-color:var(--ln)}
+.seg button[aria-pressed="true"],.dc[aria-pressed="true"]{background:linear-gradient(110deg,#00b9ff,#2275ff);color:#06101b;border-color:#00c8ff}
+.ss{border-left:2px solid var(--c)!important;border-radius:13px;box-shadow:inset 0 0 14px rgba(0,150,255,.035)}
+.ss .bd{border-radius:7px;text-transform:uppercase;letter-spacing:.06em;font-size:10px}
+.pg{background:#172237}.pg i{background:linear-gradient(90deg,#00c8ff,#7a45ff)}
+input,select,textarea{background:var(--s2);border-color:#263853;border-radius:10px}
+#nav{background:rgba(4,7,13,.94);border-top:1px solid #20334d;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding-top:8px}
+:root[data-theme="light"] #nav{background:rgba(245,249,255,.95)}
+#nav button[aria-current="true"]{color:#00c8ff;background:rgba(0,181,255,.10);text-shadow:0 0 10px rgba(0,198,255,.35)}
+#nav button{font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+#timer{border:1px solid #23527c;box-shadow:0 0 25px rgba(0,183,255,.15)}
+.sheet{border-radius:22px 22px 0 0;background:var(--s1);border-color:var(--ln)}
+#toast{border:1px solid #27527a;box-shadow:0 0 16px rgba(0,170,255,.12)}
+.cy-hero{padding:16px 16px 21px;margin:0 0 14px;border:1px solid #1d3859;border-radius:18px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 78% 38%,rgba(118,30,255,.22),transparent 44%),radial-gradient(ellipse at 18% 70%,rgba(0,183,255,.16),transparent 45%),linear-gradient(145deg,#070a11,#05060a 72%);box-shadow:0 0 24px rgba(0,160,255,.07)}
+.cy-hero:after{content:"";position:absolute;right:-40px;top:20px;width:210px;height:230px;border:1px solid rgba(0,188,255,.15);transform:skew(-20deg);background:repeating-linear-gradient(135deg,transparent 0 14px,rgba(0,191,255,.035) 14px 16px);pointer-events:none}
+.cy-top{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.cy-mark{font:700 20px "Barlow Condensed",sans-serif;letter-spacing:.12em;color:#f0f7ff}.cy-mark span{font-size:10px;color:#829ab7;letter-spacing:.2em}
+.cy-live{font:600 9px system-ui;letter-spacing:.12em;color:#78b8d8;display:flex;align-items:center;gap:6px}.cy-live i,.cy-pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:#00d2ff;box-shadow:0 0 8px #00d2ff}
+.cy-hero-main{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:28px 0 5px}
+.cy-eyebrow{font:600 10px system-ui;letter-spacing:.17em;color:#8ba4c4;margin-bottom:8px}
+.cy-hero h1{font:800 28px/1.05 "Barlow Condensed",sans-serif;margin:0;letter-spacing:.08em;text-shadow:0 0 18px rgba(0,185,255,.12)}.cy-hero h1 em{font-style:normal;color:#00c8ff}
+.cy-date{font-size:12px;color:#8ca3bf;margin-top:12px;letter-spacing:.04em}
+.cy-gi{font-size:72px;filter:drop-shadow(0 0 16px rgba(0,193,255,.3));transform:rotate(-9deg);opacity:.95;margin-right:3px}
+.cy-lines{height:3px;width:45%;margin-top:12px;background:linear-gradient(90deg,#00c8ff,#8a35ff,transparent);box-shadow:0 0 9px rgba(0,190,255,.5)}
+.cy-stats{border-color:#17466a;background:linear-gradient(145deg,#091522,#080b13)}.cy-caption{font-size:10px;letter-spacing:.1em;color:#8aa4c3}
+.cy-section{font:700 10px system-ui;letter-spacing:.16em;color:#63b9e8;margin-bottom:12px}.cy-next{border-color:#23425f}.cy-next .nx{margin-top:3px}.cy-button{letter-spacing:.06em;font-size:11px}
+.cy-week .bars .bk{background:#101a2a;border:1px solid #213650;border-radius:6px;overflow:hidden}.cy-week .bars .bk i{background:linear-gradient(180deg,#8a42ff,#00c8ff);box-shadow:0 0 10px rgba(0,188,255,.2)}.cy-week .bars .bk u{background:#20e2ff}
+.cy-rest .tp{gap:8px}
+@media(min-width:600px){.cy-hero{padding:22px}.cy-hero h1{font-size:36px}.cy-gi{font-size:96px}}
+
 </style>
 </head>
 <body>
@@ -195,14 +245,15 @@ function Home(){
   let mx=Math.max(1,...S.plan.map(a=>a.length));
   let bars=AB.map((a,i)=>{let p=S.plan[i].length,n=done(ds(add(m,i))).length;
     return `<div><div class="bk"><i style="height:${p/mx*100}%"><u style="height:${p?Math.min(1,n/p)*100:0}%"></u></i></div><small>${a}</small></div>`}).join("");
-  return `<h1>${g}${S.name?", "+esc(S.name):""}</h1><p class="mu">${esc(new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}))}</p>
-  <section class="card"><div class="ringrow"><svg class="ring" viewBox="0 0 100 100" role="img" aria-label="${pct}% da semana concluído"><circle cx="50" cy="50" r="44" class="rb"/><circle cx="50" cy="50" r="44" class="rf" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" class="rt">${pct}%</text></svg>
+  return `<header class="cy-hero"><div class="cy-top"><span class="cy-mark">TREINO<span> / JIU-JITSU</span></span><span class="cy-live"><i></i> SISTEMA ATIVO</span></div><div class="cy-hero-main"><div><div class="cy-eyebrow">${g.toUpperCase()}${S.name?", "+esc(S.name).toUpperCase():""}</div><h1>DISCIPLINA<br><em>É O CAMINHO.</em></h1><p class="cy-date">${esc(new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}))}</p></div><div class="cy-gi" aria-hidden="true">🥋</div></div><div class="cy-lines"></div></header>
+  <section class="card cy-stats"><div class="ringrow"><svg class="ring" viewBox="0 0 100 100" role="img" aria-label="${pct}% da semana concluído"><circle cx="50" cy="50" r="44" class="rb"/><circle cx="50" cy="50" r="44" class="rf" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" class="rt">${pct}%</text></svg>
   <div class="kp"><div><b>${w.dn}</b><span>Concluídos</span></div><div><b>${w.pe}</b><span>Pendentes</span></div><div><b>${streak()}</b><span>Sequência</span></div></div></div>
-  <p class="mu" style="margin-top:10px">${w.pl?`Esta semana: ${w.dn} de ${w.pl} treinos · ${w.min?fm(w.min):"0 min"} de atividade`:"Nenhum treino programado para esta semana ainda."}</p></section>
-  <section class="card"><h3>Próximo treino</h3>${nx?`<div class="nx" style="--c:${CATS[nx.x.t]||"#999"}"><div><small>${nx.i==0?"Hoje":nx.i==1?"Amanhã":DAYS[wd(nx.d)]}${nx.x.h?" às "+esc(nx.x.h):""}</small><b>${esc(nx.x.n||nx.x.t)}</b><small>${esc(nx.x.t)}${nx.x.d?" · "+esc(nx.x.d)+" min":""}</small></div><button class="b pri" data-a="goto" data-k="${nx.k}">Ver</button></div>`:`<div class="empty"><b>Nenhum treino pendente</b><p>Monte seu cronograma na aba Agenda.</p><button class="b pri" data-a="tab" data-t="ag">Abrir agenda</button></div>`}</section>
-  <section class="card"><h3>Semana em andamento</h3><div class="bars">${bars}</div><p class="mu" style="margin-top:8px;font-size:13px">Barra vazia: treinos programados. Preenchida: concluídos.</p></section>
-  <section class="card"><h3>Cronômetro de descanso</h3><div class="tp">${[30,60,90,120].map(s=>`<button class="b" data-a="tm" data-s="${s}">${s}s</button>`).join("")}</div></section>`;
+  <p class="mu cy-caption">${w.pl?`SEMANA: ${w.dn} / ${w.pl} SESSÕES · ${w.min?fm(w.min):"0 MIN"} ATIVOS`:"SEM TREINOS PROGRAMADOS ESTA SEMANA."}</p></section>
+  <section class="card cy-next"><div class="cy-section"><span class="cy-pulse"></span> PRÓXIMA MISSÃO</div>${nx?`<div class="nx" style="--c:${CATS[nx.x.t]||"#999"}"><div><small>${nx.i==0?"Hoje":nx.i==1?"Amanhã":DAYS[wd(nx.d)]}${nx.x.h?" às "+esc(nx.x.h):""}</small><b>${esc(nx.x.n||nx.x.t)}</b><small>${esc(nx.x.t)}${nx.x.d?" · "+esc(nx.x.d)+" min":""}</small></div><button class="b pri cy-button" data-a="goto" data-k="${nx.k}">ACESSAR ↗</button></div>`:`<div class="empty"><b>Nenhum treino pendente</b><p>Monte seu cronograma na aba Agenda.</p><button class="b pri" data-a="tab" data-t="ag">Abrir agenda</button></div>`}</section>
+  <section class="card cy-week"><div class="cy-section">// STATUS DA SEMANA</div><div class="bars">${bars}</div><p class="mu" style="margin-top:8px;font-size:13px">Barra vazia: treinos programados. Preenchida: concluídos.</p></section>
+  <section class="card cy-rest"><div class="cy-section">// TIMER DE RECUPERAÇÃO</div><div class="tp">${[30,60,90,120].map(s=>`<button class="b cy-button" data-a="tm" data-s="${s}">${s}s</button>`).join("")}</div></section>`;
 }
+
 function Agenda(){
   return `<h1>Agenda</h1><div class="seg"><button data-a="mode" data-m="sem" aria-pressed="${V.mode=="sem"}">Semana</button><button data-a="mode" data-m="mes" aria-pressed="${V.mode=="mes"}">Mês</button></div>`+(V.mode=="sem"?Sem():Mes());
 }
