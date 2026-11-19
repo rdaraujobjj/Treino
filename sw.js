@@ -1,12 +1,13 @@
 /* Service Worker do TREINO - compatível com GitHub Pages em /Treino/ */
 const CACHE_PREFIX = "treino-";
-const CACHE_NAME = "treino-v4-cyberpunk";
+const CACHE_NAME = "treino-v5-norteflow";
 const CORE_FILES = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./logo.png"
 ];
 
 self.addEventListener("install", event => {
