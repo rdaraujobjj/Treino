@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Cronograma de Treinos</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--s1:#101012;--s2:#1b1b1e;--ln:#28282c;--ink:#f5f5f7;--mu:#8e8e96;--ac:#fff;--on:#000;--sh:0 8px 24px rgba(0,0,0,.45);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme="light"]{--bg:#f3f3f6;--s1:#fff;--s2:#ececf1;--ln:#dcdce3;--ink:#111114;--mu:#6c6c76;--ac:#111114;--on:#fff;--sh:0 6px 20px rgba(20,20,40,.08);color-scheme:light}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 Barlow,system-ui,sans-serif}
+[hidden]{display:none!important}
+main{max-width:760px;margin:0 auto;padding:16px 16px 130px}
+h1{font:700 34px/1.05 "Barlow Condensed",sans-serif;margin:6px 0 4px}
+h2{font:700 24px/1.1 "Barlow Condensed",sans-serif;margin:0}
+h3{font:700 18px "Barlow Condensed",sans-serif;margin:0 0 10px;letter-spacing:.3px}
+.mu,small{color:var(--mu)}p{margin:4px 0}
+button{font:inherit;color:inherit;cursor:pointer}
+.card{background:var(--s1);border:1px solid var(--ln);border-radius:20px;padding:16px;margin:14px 0;box-shadow:var(--sh)}
+.b{border:1px solid var(--ln);background:var(--s2);border-radius:12px;padding:10px 14px;font-weight:600}
+.b.pri,.pb{background:var(--ac);color:var(--on);border-color:var(--ac)}
+.pb{border:0;border-radius:12px;padding:9px 14px;font-weight:600}
+.ib{border:1px solid var(--ln);background:var(--s2);border-radius:10px;min-width:38px;height:38px;padding:0 8px}
+.ringrow{display:flex;align-items:center;gap:18px}.ring{width:110px;flex:none}
+.rb{fill:none;stroke:var(--s2);stroke-width:9}.rf{fill:none;stroke:var(--ac);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .6s}.rt{fill:var(--ink);font:700 22px "Barlow Condensed",sans-serif}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;flex:1;text-align:center}.kp b{display:block;font:700 30px "Barlow Condensed",sans-serif}.kp span{font-size:13px;color:var(--mu)}
+.nx{display:flex;justify-content:space-between;align-items:center;gap:10px;border-left:5px solid var(--c);padding-left:12px}.nx b{display:block;font-size:19px}
+.tp{display:flex;gap:8px}.tp .b{flex:1}
+.bars{display:grid;grid-template-columns:repeat(var(--n,7),1fr);gap:8px;text-align:center}
+.bk{height:96px;display:flex;align-items:flex-end}.bk i{display:block;width:100%;position:relative;overflow:hidden;border:1px solid var(--ln);background:var(--s2);border-radius:8px;min-height:5px}.bk u{position:absolute;bottom:0;left:0;right:0;background:var(--ac)}
+.bars small{font-size:12px}.bars .v{font:700 15px "Barlow Condensed",sans-serif}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--s1);border:1px solid var(--ln);border-radius:14px;margin:10px 0}
+.seg button{border:0;background:none;border-radius:10px;padding:9px;font-weight:600;color:var(--mu)}
+.seg button[aria-pressed="true"]{background:var(--ac);color:var(--on)}
+.wn{display:flex;gap:8px;margin:12px 0}.wn button{border:1px solid var(--ln);background:var(--s1);border-radius:12px;padding:9px 14px;font-weight:600}.wn button:nth-child(2){flex:1;text-transform:capitalize}
+.dcs{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dc{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border:1px solid var(--ln);background:var(--s1);border-radius:14px}
+.dc b{font:700 20px "Barlow Condensed",sans-serif}.dc small{font-size:12px}
+.dc[aria-pressed="true"]{background:var(--ac);color:var(--on);border-color:var(--ac)}.dc[aria-pressed="true"] small{color:var(--on)}
+[data-today]{outline:1.5px dashed var(--mu);outline-offset:2px}
+.dots{display:flex;gap:3px;height:8px;justify-content:center}.dots i{width:7px;height:7px;border-radius:50%;border:1.5px solid;display:block}
+.mg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.mg>small{text-align:center;font-size:12px}
+.mc{display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 0;min-height:56px;border:1px solid var(--ln);background:var(--s1);border-radius:12px}.mc.off{opacity:.35}.mc b{font-weight:600;font-size:14px}.mc .dots{flex-wrap:wrap;height:auto;max-width:36px}
+.dh{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+.ss{background:var(--s1);border:1px solid var(--ln);border-left:5px solid var(--c);border-radius:16px;padding:12px;margin:10px 0;box-shadow:var(--sh)}
+.sh{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;cursor:pointer}.tx{min-width:0}.tx b{display:block;font-size:17px;overflow-wrap:anywhere}
+.bd{font-size:12px;border:1px solid var(--ln);border-radius:20px;padding:2px 9px;white-space:nowrap;color:var(--mu)}
+.ss.d .bd{background:var(--ac);color:var(--on);border-color:var(--ac)}.ss.d .tx b{text-decoration:line-through;opacity:.6}.ss.c{opacity:.55}
+.ac{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.ac .b{padding:8px 12px;font-size:14px}
+.dt{margin-top:10px;padding-top:10px;border-top:1px solid var(--ln)}.er{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--ln)}.er:last-child{border:0}.er span{flex:1;font-weight:500}
+.empty{text-align:center;padding:24px 16px;border:1px dashed var(--ln);border-radius:16px;margin:10px 0;color:var(--mu)}.empty b{color:var(--ink);display:block;font-size:17px}.empty .b{margin-top:10px}
+.mets{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mets b{display:block;font:700 30px "Barlow Condensed",sans-serif}
+.pg{height:8px;background:var(--s2);border-radius:8px;overflow:hidden;margin-top:8px}.pg i{display:block;height:100%;background:var(--ac)}
+.ln{width:100%;height:auto;color:var(--ink);margin-top:8px}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}.bg{border:1px solid var(--ln);border-radius:14px;padding:12px;font-weight:600;font-size:14px}.bg.off{opacity:.35}
+.hr{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ln)}.hr:last-child{border:0}.hr span:nth-child(2){flex:1;min-width:0;overflow-wrap:anywhere}
+.cd{width:10px;height:10px;border-radius:50%;flex:none}
+label{display:block;font-size:13px;color:var(--mu);margin:12px 0 4px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--s2);border:1px solid var(--ln);border-radius:12px;padding:10px;width:100%;min-width:0}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.xr{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:6px;margin:8px 0;padding:8px;border:1px solid var(--ln);border-radius:12px}.xr .xn{grid-column:1/-1}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:30}
+.sheet{background:var(--s1);border:1px solid var(--ln);border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));width:100%;max-width:560px;max-height:92vh;overflow:auto}
+.row{display:flex;gap:8px;margin-top:16px}.row .b{flex:1}
+#nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:4px;background:var(--s1);border-top:1px solid var(--ln);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:20}
+#nav button{flex:1;max-width:160px;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--mu);font-size:12px;padding:6px 0;border-radius:12px}
+#nav button[aria-current="true"]{color:var(--ink);background:var(--s2)}
+#timer{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--ac);color:var(--on);border-radius:30px;padding:6px 8px 6px 18px;display:flex;align-items:center;gap:8px;z-index:25;box-shadow:var(--sh)}
+#timer b{font:700 26px "Barlow Condensed",sans-serif}#timer .ib{color:var(--ink)}
+#toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translate(-50%,-20px);opacity:0;background:var(--ac);color:var(--on);padding:10px 16px;border-radius:30px;font-weight:600;z-index:40;pointer-events:none;transition:.25s;max-width:90vw;text-align:center}#toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main id="view"></main>
+<div id="timer" hidden></div>
+<nav id="nav" aria-label="Navegação principal">
+<button data-a="tab" data-t="home"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Início</button>
+<button data-a="tab" data-t="ag"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agenda</button>
+<button data-a="tab" data-t="ev"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Evolução</button>
+<button data-a="tab" data-t="aj"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Ajustes</button>
+</nav>
+<div id="modal" hidden></div>
+<div id="toast" role="status"></div>
+<script>
+const K="treino-semanal-v3",OLD="treino-semanal-v2";
+const CATS={"Jiu-Jitsu":"#4c8dff","Luta livre":"#ff5a4d","Preparação física":"#ffb020","Cardio":"#3ddc84","Musculação":"#b38cff","Corrida":"#2bd4d4","Funcional":"#ff7ac6","Mobilidade":"#c9d65a","Outro":"#9a9a9a"};
+const INT=["","Leve","Moderada","Alta"],DAYS=["Segunda","Terça","Quarta","Quinta","Sexta","Sábado","Domingo"],AB=["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");
+const pad=n=>String(n).padStart(2,"0"),uid=()=>Math.random().toString(36).slice(2,9);
+const ds=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const pd=s=>{let[a,b,c]=s.split("-");return new Date(a,b-1,c)};
+const add=(d,n)=>{let x=new Date(d);x.setDate(x.getDate()+n);return x};
+const mon=d=>{let x=new Date(d);x.setHours(0,0,0,0);return add(x,-((x.getDay()+6)%7))};
+const wd=d=>(d.getDay()+6)%7;
+const num=v=>parseFloat(String(v).replace(",","."))||0;
+const fm=m=>m>=60?Math.floor(m/60)+"h"+(m%60?pad(m%60):""):m+" min";
+const fd=k=>k.slice(8)+"/"+k.slice(5,7);
+let S,E=null,CB=null,T=null;
+let V={tab:"home",mode:"sem",week:mon(new Date()),sel:ds(new Date()),month:new Date(),open:null,ex:""};
+const done=k=>Object.values(S.log[k]||{}).filter(e=>e.s=="d");
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+function load(){
+  try{let r=localStorage.getItem(K);if(r){let p=JSON.parse(r);if(p&&p.plan){S=p;return}}}catch(e){}
+  S={plan:[[],[],[],[],[],[],[]],log:{},name:"",theme:"dark",goal:0,best:0};
+  try{let o=JSON.parse(localStorage.getItem(OLD)||"null");
+    if(o&&o.days&&o.days.length==7){let m=mon(new Date());
+      o.days.forEach((d,i)=>d.forEach(x=>{
+        let s={id:uid(),t:CATS[x.t]?x.t:"Outro",n:"",h:x.h||"",d:x.d||"",o:x.o||"",i:"",ex:[]};
+        S.plan[i].push(s);
+        if(x.done){let k=ds(add(m,i));(S.log[k]=S.log[k]||{})[s.id]={s:"d",t:s.t,n:"",m:num(s.d),ex:[]}}
+      }))}}catch(e){}
+  save();
+}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast("Não foi possível salvar neste aparelho. Faça um backup.")}}
+function find(id){for(let i=0;i<7;i++){let x=S.plan[i].find(y=>y.id==id);if(x)return[i,x]}}
+function wk(m){let pl=0,dn=0,cn=0,min=0;
+  for(let i=0;i<7;i++){pl+=S.plan[i].length;Object.values(S.log[ds(add(m,i))]||{}).forEach(e=>{if(e.s=="d"){dn++;min+=e.m}else cn++})}
+  pl=Math.max(pl,dn+cn);return{pl,dn,cn,pe:pl-dn-cn,min}}
+function streak(){let d=new Date(),n=0,t=ds(d);d.setHours(0,0,0,0);
+  for(let i=0;i<400;i++,d=add(d,-1)){let k=ds(d);if(done(k).length)n++;else if(k!=t&&S.plan[wd(d)].length)break}return n}
+function next(){let now=new Date(),t=pad(now.getHours())+":"+pad(now.getMinutes());
+  for(let i=0;i<7;i++){let d=add(now,i),k=ds(d),l=S.plan[wd(d)].filter(x=>!S.log[k]?.[x.id]&&(i>0||!x.h||x.h>=t));if(l.length)return{d,k,x:l[0],i}}return null}
+
+/* ---------- telas ---------- */
+function Home(){
+  let m=mon(new Date()),w=wk(m),h=new Date().getHours(),g=h<12?"Bom dia":h<18?"Boa tarde":"Boa noite",C=2*Math.PI*44,pct=w.pl?Math.round(w.dn/w.pl*100):0,nx=next();
+  let mx=Math.max(1,...S.plan.map(a=>a.length));
+  let bars=AB.map((a,i)=>{let p=S.plan[i].length,n=done(ds(add(m,i))).length;
+    return `<div><div class="bk"><i style="height:${p/mx*100}%"><u style="height:${p?Math.min(1,n/p)*100:0}%"></u></i></div><small>${a}</small></div>`}).join("");
+  return `<h1>${g}${S.name?", "+esc(S.name):""}</h1><p class="mu">${esc(new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}))}</p>
+  <section class="card"><div class="ringrow"><svg class="ring" viewBox="0 0 100 100" role="img" aria-label="${pct}% da semana concluído"><circle cx="50" cy="50" r="44" class="rb"/><circle cx="50" cy="50" r="44" class="rf" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" class="rt">${pct}%</text></svg>
+  <div class="kp"><div><b>${w.dn}</b><span>Concluídos</span></div><div><b>${w.pe}</b><span>Pendentes</span></div><div><b>${streak()}</b><span>Sequência</span></div></div></div>
+  <p class="mu" style="margin-top:10px">${w.pl?`Esta semana: ${w.dn} de ${w.pl} treinos · ${w.min?fm(w.min):"0 min"} de atividade`:"Nenhum treino programado para esta semana ainda."}</p></section>
+  <section class="card"><h3>Próximo treino</h3>${nx?`<div class="nx" style="--c:${CATS[nx.x.t]||"#999"}"><div><small>${nx.i==0?"Hoje":nx.i==1?"Amanhã":DAYS[wd(nx.d)]}${nx.x.h?" às "+esc(nx.x.h):""}</small><b>${esc(nx.x.n||nx.x.t)}</b><small>${esc(nx.x.t)}${nx.x.d?" · "+esc(nx.x.d)+" min":""}</small></div><button class="b pri" data-a="goto" data-k="${nx.k}">Ver</button></div>`:`<div class="empty"><b>Nenhum treino pendente</b><p>Monte seu cronograma na aba Agenda.</p><button class="b pri" data-a="tab" data-t="ag">Abrir agenda</button></div>`}</section>
+  <section class="card"><h3>Semana em andamento</h3><div class="bars">${bars}</div><p class="mu" style="margin-top:8px;font-size:13px">Barra vazia: treinos programados. Preenchida: concluídos.</p></section>
+  <section class="card"><h3>Cronômetro de descanso</h3><div class="tp">${[30,60,90,120].map(s=>`<button class="b" data-a="tm" data-s="${s}">${s}s</button>`).join("")}</div></section>`;
+}
+function Agenda(){
+  return `<h1>Agenda</h1><div class="seg"><button data-a="mode" data-m="sem" aria-pressed="${V.mode=="sem"}">Semana</button><button data-a="mode" data-m="mes" aria-pressed="${V.mode=="mes"}">Mês</button></div>`+(V.mode=="sem"?Sem():Mes());
+}
+function dots(p,k){return p.slice(0,4).map(x=>{let s=S.log[k]?.[x.id]?.s,c=CATS[x.t]||"#999";return `<i style="background:${s=="d"?c:"transparent"};border-color:${c};opacity:${s=="c"?.3:1}"></i>`}).join("")}
+function Sem(){
+  let m=V.week,e=add(m,6),tk=ds(new Date());
+  let lab=`${m.getDate()} ${m.toLocaleDateString("pt-BR",{month:"short"})} – ${e.getDate()} ${e.toLocaleDateString("pt-BR",{month:"short"})}`;
+  let chips=AB.map((a,i)=>{let d=add(m,i),k=ds(d);
+    return `<button class="dc" data-a="sel" data-k="${k}" aria-pressed="${k==V.sel}" aria-label="${DAYS[i]} ${d.getDate()}"${k==tk?" data-today":""}><small>${a}</small><b>${d.getDate()}</b><span class="dots">${dots(S.plan[i],k)}</span></button>`}).join("");
+  return `<div class="wn"><button data-a="wk" data-n="-1" aria-label="Semana anterior">‹</button><button data-a="today" aria-label="Voltar para hoje">${lab}</button><button data-a="wk" data-n="1" aria-label="Próxima semana">›</button></div><div class="dcs">${chips}</div>${Day(V.sel)}`;
+}
+function Day(k){
+  let d=pd(k),i=wd(d),l=S.plan[i];
+  return `<div class="dh"><div><h2>${DAYS[i]}</h2><p class="mu">${esc(d.toLocaleDateString("pt-BR",{day:"numeric",month:"long"}))}${k==ds(new Date())?" · hoje":""} · ${l.length?l.length+" treino"+(l.length>1?"s":""):"descanso"}</p></div><button class="pb" data-a="new" data-d="${i}">+ Treino</button></div>`+
+  (l.length?l.map(x=>Sess(x,k)).join(""):`<div class="empty"><b>Dia de descanso</b><p>Recuperar também faz parte do treino. Se quiser, adicione uma sessão.</p></div>`);
+}
+function Sess(x,k){
+  let e=S.log[k]?.[x.id],s=e?.s||"p",c=CATS[x.t]||"#999",meta=[x.h,x.d&&x.d+" min",x.i].filter(Boolean).join(" · ");
+  let st=(v,a,b)=>`<button class="b${v=="d"?" ok":""}" data-a="st" data-k="${k}" data-id="${x.id}" data-s="${v}">${s==v?b:a}</button>`;
+  return `<article class="ss ${s}" style="--c:${c}"><div class="sh" data-a="open" data-id="${x.id}"><div class="tx"><b>${esc(x.n||x.t)}</b><small>${esc(x.t)}${meta?" · "+esc(meta):""}</small></div><span class="bd">${{p:"Pendente",d:"Concluído",c:"Cancelado"}[s]}</span></div>
+  <div class="ac">${st("d","Concluir","Desfazer")}${st("c","Cancelar","Reativar")}<button class="ib" data-a="ed" data-id="${x.id}" aria-label="Editar">✎</button><button class="ib" data-a="dup" data-id="${x.id}" aria-label="Duplicar">⧉</button><button class="ib" data-a="up" data-id="${x.id}" aria-label="Mover para cima">▲</button><button class="ib" data-a="down" data-id="${x.id}" aria-label="Mover para baixo">▼</button><button class="ib" data-a="del" data-id="${x.id}" aria-label="Excluir">🗑</button></div>${V.open==x.id?Det(x):""}</article>`;
+}
+function Det(x){
+  return `<div class="dt">${x.o?`<p>${esc(x.o)}</p>`:""}${x.ex.length?x.ex.map(e=>`<div class="er"><span>${esc(e.n)}</span><small>${esc([e.s&&e.r?e.s+"×"+e.r:(e.s||e.r),e.w&&e.w+" kg"].filter(Boolean).join(" · "))}</small>${num(e.rest)?`<button class="ib" data-a="tm" data-s="${num(e.rest)}" aria-label="Iniciar descanso">⏱ ${num(e.rest)}s</button>`:""}</div>`).join(""):`<p class="mu">Sem exercícios cadastrados. Toque em editar para adicionar.</p>`}</div>`;
+}
+function Mes(){
+  let M=V.month,y=M.getFullYear(),mo=M.getMonth(),f=new Date(y,mo,1),first=wd(f),n=Math.ceil((first+new Date(y,mo+1,0).getDate())/7)*7,st=add(f,-first),tk=ds(new Date()),c="";
+  for(let i=0;i<n;i++){let d=add(st,i),k=ds(d);c+=`<button class="mc${d.getMonth()==mo?"":" off"}" data-a="pick" data-k="${k}" aria-label="${d.getDate()} de ${d.toLocaleDateString("pt-BR",{month:"long"})}"${k==tk?" data-today":""}><b>${d.getDate()}</b><span class="dots">${dots(S.plan[i%7],k)}</span></button>`}
+  return `<div class="wn"><button data-a="mm" data-n="-1" aria-label="Mês anterior">‹</button><button data-a="today">${esc(M.toLocaleDateString("pt-BR",{month:"long",year:"numeric"}))}</button><button data-a="mm" data-n="1" aria-label="Próximo mês">›</button></div><div class="mg">${AB.map(a=>`<small>${a}</small>`).join("")}${c}</div><p class="mu" style="font-size:13px;margin-top:10px">Ponto cheio: concluído. Ponto vazio: programado. Toque em um dia para abrir.</p>`;
+}
+function Line(p){
+  let W=300,H=110,P=8,v=p.map(a=>a.w),lo=Math.min(...v),r=Math.max(...v)-lo||1;
+  let xy=p.map((a,i)=>[P+(p.length>1?i/(p.length-1):.5)*(W-2*P),H-P-(a.w-lo)/r*(H-2*P)]);
+  return `<svg viewBox="0 0 ${W} ${H}" class="ln" role="img" aria-label="Evolução de carga"><polyline points="${xy.map(a=>a.join(",")).join(" ")}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>${xy.map(a=>`<circle cx="${a[0]}" cy="${a[1]}" r="3.5" fill="currentColor"/>`).join("")}</svg>`;
+}
+function Evol(){
+  let m=mon(new Date()),W=[...Array(8)].map((_,i)=>wk(add(m,-7*(7-i)))),c=W[7],p=W[6],al=[];
+  Object.keys(S.log).sort().forEach(k=>Object.values(S.log[k]).forEach(e=>al.push({k,...e})));
+  let dn=al.filter(e=>e.s=="d"),mn=dn.reduce((a,e)=>a+e.m,0),l30=dn.filter(e=>pd(e.k)>=add(new Date(),-30)).length;
+  let q=W.slice(3,7),pq=q.reduce((a,w)=>a+w.pl,0),dq=q.reduce((a,w)=>a+w.dn,0),cs=pq?Math.min(100,Math.round(dq/pq*100)):0;
+  let sk=streak();if(sk>(S.best||0)){S.best=sk;save()}
+  let mx=Math.max(1,...W.map(w=>w.pl)),goal=S.goal||c.pl;
+  let names=[...new Set(dn.flatMap(e=>e.ex.map(x=>x.n)))],ex=names.includes(V.ex)?V.ex:names[0];
+  let pts=ex?dn.map(e=>({k:e.k,w:Math.max(0,...e.ex.filter(x=>x.n==ex).map(x=>x.w))})).filter(x=>x.w>0):[];
+  let B=[["Primeiro treino",dn.length>=1],["10 treinos",dn.length>=10],["50 treinos",dn.length>=50],["Sequência de 7 dias",(S.best||0)>=7],["Semana completa",W.some(w=>w.pl&&w.dn>=w.pl)]];
+  let hist=al.filter(e=>e.s!="p").reverse().slice(0,12);
+  let bars=W.map(w=>`<div><span class="v">${w.dn}</span><div class="bk"><i style="height:${w.pl/mx*100}%"><u style="height:${w.pl?Math.min(1,w.dn/w.pl)*100:0}%"></u></i></div></div>`).join("");
+  let lbl=W.map((w,i)=>{let d=add(m,-7*(7-i));return `<small>${pad(d.getDate())}/${pad(d.getMonth()+1)}</small>`}).join("");
+  let diff=pts.length>1?+(pts[pts.length-1].w-pts[0].w).toFixed(1):0;
+  return `<h1>Evolução</h1>
+  <section class="card"><div class="mets"><div><b>${dn.length}</b><small>Treinos concluídos</small></div><div><b>${mn?fm(mn):"0 min"}</b><small>Tempo total</small></div><div><b>${l30}</b><small>Últimos 30 dias</small></div><div><b>${pq?cs+"%":"–"}</b><small>Consistência (4 sem.)</small></div></div></section>
+  <section class="card"><h3>Últimas 8 semanas</h3>${al.length||c.pl?`<div class="bars" style="--n:8">${bars}</div><div class="bars" style="--n:8;margin-top:4px">${lbl}</div>`:`<div class="empty">Sem dados ainda. Conclua treinos para ver o gráfico.</div>`}
+  <p style="margin-top:12px">Esta semana: <b>${c.dn}</b> treinos (${fm(c.min)}) · Semana passada: <b>${p.dn}</b> (${fm(p.min)})${c.dn!=p.dn?` · ${c.dn>p.dn?"+":""}${c.dn-p.dn}`:""}</p></section>
+  <section class="card"><h3>Meta semanal</h3><label for="goal">Treinos por semana</label><input id="goal" type="number" min="0" max="21" inputmode="numeric" value="${S.goal||""}" placeholder="${c.pl||"Ex.: 4"}" data-c="goal">${goal?`<div class="pg"><i style="width:${Math.min(100,c.dn/goal*100)}%"></i></div><p class="mu">${c.dn} de ${goal} esta semana${S.goal?"":" (usando o total programado)"}</p>`:`<p class="mu">Defina uma meta ou programe treinos na agenda.</p>`}</section>
+  <section class="card"><h3>Evolução de cargas</h3>${names.length?`<select data-c="ex" aria-label="Exercício">${names.map(n=>`<option${n==ex?" selected":""}>${esc(n)}</option>`).join("")}</select>${pts.length?Line(pts):""}<p class="mu">${pts.length>1?`${fd(pts[0].k)}: ${pts[0].w} kg → ${fd(pts[pts.length-1].k)}: ${pts[pts.length-1].w} kg (${diff>=0?"+":""}${diff} kg)`:pts.length?`Primeiro registro: ${pts[0].w} kg em ${fd(pts[0].k)}. Conclua mais treinos para ver a curva.`:""}</p>`:`<div class="empty">Cadastre exercícios com carga e conclua o treino para acompanhar a evolução.</div>`}</section>
+  <section class="card"><h3>Conquistas</h3><div class="badges">${B.map(b=>`<div class="bg${b[1]?"":" off"}">${b[1]?"🏆":"🔒"} ${b[0]}</div>`).join("")}</div></section>
+  <section class="card"><h3>Histórico</h3>${hist.length?hist.map(e=>`<div class="hr"><span class="cd" style="background:${CATS[e.t]||"#999"}"></span><span>${esc(e.n||e.t)}<br><small>${fd(e.k)} · ${esc(e.t)}${e.m?" · "+e.m+" min":""}</small></span><small>${e.s=="d"?"Concluído":"Cancelado"}</small></div>`).join(""):`<div class="empty">Seu histórico aparece aqui quando você concluir ou cancelar treinos.</div>`}</section>`;
+}
+function Ajustes(){
+  return `<h1>Ajustes</h1>
+  <section class="card"><label for="nm">Seu nome</label><input id="nm" value="${esc(S.name)}" placeholder="Como quer ser chamado?" maxlength="30" data-c="name"></section>
+  <section class="card"><h3>Tema</h3><div class="seg" style="margin:0"><button data-a="theme" data-v="dark" aria-pressed="${S.theme!="light"}">Escuro</button><button data-a="theme" data-v="light" aria-pressed="${S.theme=="light"}">Claro</button></div></section>
+  <section class="card"><h3>Dados</h3><p class="mu">Tudo fica salvo neste aparelho. Faça backup de vez em quando.</p><div class="row"><button class="b" data-a="bk">Salvar backup</button><button class="b" data-a="rs">Restaurar backup</button></div><div class="row"><button class="b" data-a="exp">Exportar histórico</button><button class="b" data-a="wipe">Apagar tudo</button></div></section>`;
+}
+function Ed(){
+  let x=E.x;
+  return `<div class="sheet"><h2>${E.isNew?"Novo treino":"Editar treino"}</h2>
+  <label for="f-n">Nome</label><input id="f-n" value="${esc(x.n)}" placeholder="Ex.: Treino de guarda" maxlength="60">
+  <div class="g2"><div><label for="f-t">Categoria</label><select id="f-t">${Object.keys(CATS).map(c=>`<option${c==x.t?" selected":""}>${c}</option>`).join("")}</select></div>
+  <div><label for="f-day">Dia</label><select id="f-day">${DAYS.map((d,i)=>`<option value="${i}"${i==E.day?" selected":""}>${d}</option>`).join("")}</select></div>
+  <div><label for="f-h">Horário</label><input id="f-h" type="time" value="${esc(x.h)}"></div>
+  <div><label for="f-d">Duração (min)</label><input id="f-d" inputmode="numeric" value="${esc(x.d)}"></div></div>
+  <label for="f-i">Intensidade</label><select id="f-i">${INT.map(v=>`<option value="${v}"${v==x.i?" selected":""}>${v||"Não definida"}</option>`).join("")}</select>
+  <label>Exercícios</label><div id="exs">${x.ex.map(ExRow).join("")}</div><button class="b" data-a="addex" type="button">+ Exercício</button>
+  <label for="f-o">Observações</label><textarea id="f-o" rows="2">${esc(x.o)}</textarea>
+  <div class="row"><button class="b" data-a="close">Cancelar</button><button class="b pri" data-a="save">Salvar</button></div></div>`;
+}
+const ExRow=(e,j)=>`<div class="xr"><input class="xn" placeholder="Exercício" aria-label="Exercício" value="${esc(e.n)}"><input placeholder="Séries" aria-label="Séries" inputmode="numeric" value="${esc(e.s)}"><input placeholder="Reps" aria-label="Repetições" value="${esc(e.r)}"><input placeholder="Carga kg" aria-label="Carga em kg" inputmode="decimal" value="${esc(e.w)}"><input placeholder="Desc. s" aria-label="Descanso em segundos" inputmode="numeric" value="${esc(e.rest)}"><button class="ib" data-a="rmex" data-j="${j}" aria-label="Remover exercício">✕</button></div>`;
+
+/* ---------- ações ---------- */
+function render(){
+  document.documentElement.dataset.theme=S.theme=="light"?"light":"dark";
+  $("#view").innerHTML=({home:Home,ag:Agenda,ev:Evol,aj:Ajustes})[V.tab]();
+  $$("#nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.t==V.tab));
+}
+function M(h){let m=$("#modal");m.innerHTML=h;m.hidden=false}
+function closeM(){$("#modal").hidden=true;E=null}
+function ask(msg,cb){CB=cb;M(`<div class="sheet"><p>${msg}</p><div class="row"><button class="b" data-a="close">Cancelar</button><button class="b pri" data-a="yes">Confirmar</button></div></div>`)}
+function toast(m){let t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),2400)}
+function edit(x,day,isNew){E={x,day,isNew};M(Ed())}
+function harvest(){let x=E.x;x.n=$("#f-n").value.trim();x.t=$("#f-t").value;E.day=+$("#f-day").value;x.h=$("#f-h").value;x.d=$("#f-d").value.trim();x.i=$("#f-i").value;x.o=$("#f-o").value.trim();
+  x.ex=$$("#exs .xr").map(r=>{let v=[...r.querySelectorAll("input")].map(i=>i.value.trim());return{n:v[0],s:v[1],r:v[2],w:v[3],rest:v[4]}})}
+function ins(day,x){let a=S.plan[day],p=x.h?a.findIndex(y=>y.h&&y.h>x.h):-1;p<0?a.push(x):a.splice(p,0,x)}
+function mv(id,dir){let[i]=find(id),a=S.plan[i],j=a.findIndex(y=>y.id==id),n=j+dir;if(n<0||n>=a.length)return;[a[j],a[n]]=[a[n],a[j]];save();render()}
+function tdraw(){let b=$("#timer");if(!T){b.hidden=true;return}b.hidden=false;b.innerHTML=`<b>${Math.floor(T.left/60)}:${pad(T.left%60)}</b><button class="ib" data-a="tadd">+15s</button><button class="ib" data-a="tstop">Parar</button>`}
+function tm(s){if(T)clearInterval(T.iv);T={left:s,iv:setInterval(()=>{T.left--;if(T.left<=0){clearInterval(T.iv);T=null;navigator.vibrate&&navigator.vibrate([250,120,250]);toast("Descanso acabou. Bora pra próxima série!")}tdraw()},1000)};tdraw()}
+
+const A={
+  tab:d=>{V.tab=d.t;render();scrollTo(0,0)},
+  mode:d=>{V.mode=d.m;render()},
+  wk:d=>{V.week=add(V.week,7*d.n);V.sel=ds(add(V.week,wd(pd(V.sel))));V.open=null;render()},
+  mm:d=>{V.month=new Date(V.month.getFullYear(),V.month.getMonth()+ +d.n,1);render()},
+  today:()=>{V.week=mon(new Date());V.sel=ds(new Date());V.month=new Date();render()},
+  sel:d=>{V.sel=d.k;V.open=null;render()},
+  pick:d=>{V.sel=d.k;V.week=mon(pd(d.k));V.mode="sem";V.open=null;render();scrollTo(0,0)},
+  goto:d=>{V.sel=d.k;V.week=mon(pd(d.k));V.mode="sem";V.tab="ag";V.open=null;render();scrollTo(0,0)},
+  open:d=>{V.open=V.open==d.id?null:d.id;render()},
+  st:d=>{let[i,x]=find(d.id),L=S.log[d.k]||(S.log[d.k]={}),c=L[d.id];
+    if(c&&c.s==d.s){delete L[d.id];if(!Object.keys(L).length)delete S.log[d.k]}
+    else{L[d.id]={s:d.s,t:x.t,n:x.n,m:num(x.d),ex:x.ex.filter(e=>e.n&&num(e.w)).map(e=>({n:e.n,w:num(e.w)}))};if(d.s=="d")toast("Treino concluído! 💪")}
+    save();render()},
+  new:d=>edit({id:uid(),t:"Jiu-Jitsu",n:"",h:"",d:"",o:"",i:"",ex:[]},+d.d,true),
+  ed:d=>{let[i,x]=find(d.id);edit(clone(x),i,false)},
+  dup:d=>{let[i,x]=find(d.id),c=clone(x);c.id=uid();c.n=(x.n||x.t)+" (cópia)";edit(c,i,true)},
+  up:d=>mv(d.id,-1),down:d=>mv(d.id,1),
+  del:d=>ask("Excluir este treino do cronograma? O histórico já registrado é mantido.",()=>{let[i]=find(d.id);S.plan[i]=S.plan[i].filter(y=>y.id!=d.id);save();render();toast("Treino excluído")}),
+  addex:()=>{harvest();E.x.ex.push({n:"",s:"",r:"",w:"",rest:""});$("#exs").innerHTML=E.x.ex.map(ExRow).join("");let l=$$("#exs .xn");l[l.length-1].focus()},
+  rmex:d=>{harvest();E.x.ex.splice(+d.j,1);$("#exs").innerHTML=E.x.ex.map(ExRow).join("")},
+  save:()=>{harvest();let x=E.x;x.ex=x.ex.filter(e=>e.n);let o=E.isNew?null:find(x.id);
+    if(o&&o[0]==E.day&&o[1].h==x.h)S.plan[E.day][S.plan[E.day].indexOf(o[1])]=x;
+    else{if(o)S.plan[o[0]]=S.plan[o[0]].filter(y=>y.id!=x.id);ins(E.day,x)}
+    V.sel=ds(add(V.week,E.day));save();closeM();render();toast("Treino salvo")},
+  close:closeM,
+  yes:()=>{let f=CB;closeM();f&&f()},
+  tm:d=>tm(+d.s),
+  tadd:()=>{if(T){T.left+=15;tdraw()}},
+  tstop:()=>{if(T)clearInterval(T.iv);T=null;tdraw()},
+  theme:d=>{S.theme=d.v;save();render()},
+  exp:()=>{let r=[["data","status","categoria","treino","minutos","cargas"]];
+    Object.keys(S.log).sort().forEach(k=>Object.values(S.log[k]).forEach(e=>r.push([k,e.s=="d"?"concluido":"cancelado",e.t,e.n||e.t,e.m,e.ex.map(x=>x.n+" "+x.w+"kg").join("; ")])));
+    let csv=r.map(l=>l.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
+    M(`<div class="sheet"><h2>Exportar histórico</h2><p class="mu">Copie e cole em uma planilha ou nota. Salvando como .csv, abre no Excel ou Google Planilhas.</p>${r.length>1?"":"<p>Ainda não há treinos registrados.</p>"}<textarea id="csv" rows="8" readonly>${esc(csv)}</textarea><div class="row"><button class="b" data-a="close">Fechar</button><button class="b pri" data-a="copy">Copiar</button></div></div>`)},
+  copy:()=>{let t=$("#csv");t.select();let f=()=>{try{document.execCommand("copy");toast("Copiado")}catch(e){toast("Selecione o texto e copie")}};navigator.clipboard?navigator.clipboard.writeText(t.value).then(()=>toast("Copiado"),f):f()},
+  bk:()=>{let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:"application/json"}));a.download="treino-backup-"+ds(new Date())+".json";document.body.appendChild(a);a.click();a.remove();toast("Backup salvo")},
+  rs:()=>{let i=document.createElement("input");i.type="file";i.accept=".json,application/json";i.onchange=()=>{let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let p=JSON.parse(r.result);if(!p||!Array.isArray(p.plan)||p.plan.length!=7||typeof p.log!="object")throw 0;ask("Substituir os dados atuais pelo backup de "+esc(f.name)+"?",()=>{S=p;save();V.tab="home";render();toast("Backup restaurado")})}catch(e){toast("Arquivo de backup inválido")}};r.readAsText(f)};i.click()},
+  wipe:()=>ask("Apagar cronograma, histórico e ajustes? Isso não pode ser desfeito.",()=>{try{localStorage.removeItem(K);localStorage.removeItem(OLD)}catch(e){}load();V.tab="home";render();toast("Dados apagados")})
+};
+document.addEventListener("click",e=>{if(e.target.id=="modal")return closeM();let b=e.target.closest("[data-a]");if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset)});
+document.addEventListener("change",e=>{let t=e.target,c=t.dataset.c;if(!c)return;
+  if(c=="name")S.name=t.value.trim();if(c=="goal")S.goal=Math.max(0,Math.floor(num(t.value)));if(c=="ex")V.ex=t.value;save();render()});
+document.addEventListener("keydown",e=>{if(e.key=="Escape"&&!$("#modal").hidden)closeM()});
+load();render();
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
