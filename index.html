@@ -199,11 +199,22 @@ main{position:relative}
 .mz{cursor:pointer;stroke:var(--ln);stroke-width:1.2}.mz:focus-visible,.mz.sel{stroke:var(--ink);stroke-width:2.4;outline:0}
 .lg{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--s2),var(--ac));margin:10px 0 4px}
 .dn{display:flex;align-items:center;gap:16px}.dn svg{width:120px;flex:none}.dl{flex:1;display:grid;gap:6px;font-size:14px}.dl div{display:flex;align-items:center;gap:8px}.dl small{margin-left:auto}
+.vit svg{width:100%;height:auto;max-height:460px;display:block;margin:0 auto}.vfr,.vdt{pointer-events:none}.vdt{fill:none;stroke:var(--bg);stroke-width:1.1;opacity:.5}
+.rd .ph{text-align:center;font:700 12px system-ui;letter-spacing:.18em;color:#74cad7}
+.rd .big{font:700 88px/1 "Barlow Condensed",sans-serif;text-align:center;letter-spacing:.02em;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.rd.rest .ph,.rd.rest .big{color:#ffb020}.rd.last .big{color:#ff5a4d}
+.rd .chips{display:flex;gap:8px;margin:6px 0 10px}.rd .chips .b{flex:1;padding:8px 0}
+.rd .b[aria-pressed="true"]{background:var(--ac);color:var(--on);border-color:var(--ac)}.rd button:disabled{opacity:.4}
+#rdfs{position:fixed;inset:0;z-index:60;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px);text-align:center}
+#rdfs .fp{font:700 16px system-ui;letter-spacing:.26em;color:#74cad7}#rdfs .ft{font:700 min(32vw,38vh)/1 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums;color:#fff}#rdfs .fr{font:600 24px Barlow,system-ui,sans-serif;color:#8e8e96}
+#rdfs .fb{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap;justify-content:center}#rdfs .fb .b{min-width:110px;padding:14px 18px;font-weight:700;letter-spacing:.06em}
+#rdfs.rest .fp,#rdfs.rest .ft{color:#ffb020}#rdfs.last{background:#2a0705}#rdfs.last .ft,#rdfs.last .fp{color:#ff5a4d}
 </style>
 </head>
 <body>
 <main id="view"></main>
 <div id="timer" hidden></div>
+<div id="rdfs" hidden></div>
 <nav id="nav" aria-label="Navegação principal">
 <button data-a="tab" data-t="home"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Início</button>
 <button data-a="tab" data-t="ag"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agenda</button>
@@ -232,7 +243,7 @@ const fd=k=>k.slice(8)+"/"+k.slice(5,7);
 let S,E=null,CB=null,T=null;
 const CFG=window.NF_CLOUD||{},CLOUD=!!(window.supabase&&/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")&&(CFG.key||"").length>20),sb=CLOUD?window.supabase.createClient(CFG.url,CFG.key):null;
 let U=null,READY=!CLOUD,SY=0,pt=null;
-const VER="2026-11-19b",WHY=CLOUD?"":!window.supabase?"a biblioteca da nuvem não carregou":!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")?"a URL no config.js não está certa":"a chave no config.js não está certa";
+const VER="2026-11-21b",WHY=CLOUD?"":!window.supabase?"a biblioteca da nuvem não carregou":!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")?"a URL no config.js não está certa":"a chave no config.js não está certa";
 let V={tab:"home",mode:"sem",week:mon(new Date()),sel:ds(new Date()),month:new Date(),open:null,ex:"",wi:7,mu:""};
 const done=k=>Object.values(S.log[k]||{}).filter(e=>e.s=="d");
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -298,7 +309,7 @@ function Home(){
   <p class="mu cy-caption">${w.pl?`SEMANA: ${w.dn} / ${w.pl} SESSÕES · ${w.min?fm(w.min):"0 MIN"} ATIVOS`:"SEM TREINOS PROGRAMADOS ESTA SEMANA."}</p></section>
   <section class="card cy-next"><div class="cy-section"><span class="cy-pulse"></span> PRÓXIMA MISSÃO</div>${nx?`<div class="nx" style="--c:${CATS[nx.x.t]||"#999"}"><div><small>${nx.i==0?"Hoje":nx.i==1?"Amanhã":DAYS[wd(nx.d)]}${nx.x.h?" às "+esc(nx.x.h):""}</small><b>${esc(nx.x.n||nx.x.t)}</b><small>${esc(nx.x.t)}${nx.x.d?" · "+esc(nx.x.d)+" min":""}</small></div><button class="b pri cy-button" data-a="goto" data-k="${nx.k}">ACESSAR ↗</button></div>`:`<div class="empty"><b>Nenhum treino pendente</b><p>Monte seu cronograma na aba Agenda.</p><button class="b pri" data-a="tab" data-t="ag">Abrir agenda</button></div>`}</section>
   <section class="card cy-week"><div class="cy-section">// STATUS DA SEMANA</div><div class="bars">${bars}</div><p class="mu" style="margin-top:8px;font-size:13px">Barra vazia: treinos programados. Preenchida: concluídos.</p></section>
-  <section class="card cy-rest"><div class="cy-section">// TIMER DE RECUPERAÇÃO</div><div class="tp">${[30,60,90,120].map(s=>`<button class="b cy-button" data-a="tm" data-s="${s}">${s}s</button>`).join("")}</div></section>`;
+  <section class="card cy-rest"><div class="cy-section">// TIMER DE RECUPERAÇÃO</div><div class="tp">${[30,60,90,120].map(s=>`<button class="b cy-button" data-a="tm" data-s="${s}">${s}s</button>`).join("")}</div></section>${Rounds()}`;
 }
 
 function Agenda(){
@@ -359,16 +370,20 @@ function Donut(dn){
 }
 const MU={peito:"Peito",ombros:"Ombros",biceps:"Bíceps",triceps:"Tríceps",antebraco:"Antebraços",abdomen:"Abdômen",costas:"Costas",trapezio:"Trapézio",lombar:"Lombar",gluteos:"Glúteos",quadriceps:"Quadríceps",posteriores:"Posteriores",panturrilha:"Panturrilhas"};
 const KW={peito:"supino|crucifixo|peck|voador|flex[aã]o|crossover|peitoral",ombros:"desenvolvimento|eleva[cç][aã]o lateral|ombro|arnold|militar|face pull",biceps:"rosca(?! (tr|testa))|b[ií]ceps|martelo|curl",triceps:"tr[ií]ceps|testa|mergulho|paralela|franc[eê]s|pushdown",antebraco:"antebra|punho|wrist",abdomen:"abdom|prancha|crunch|canivete|core|eleva[cç][aã]o de pernas",costas:"remada|puxada|barra fixa|pulldown|dorsal|pullover|serrote",trapezio:"encolhimento|trap[eé]zio",lombar:"lombar|good morning|hiperext|terra",gluteos:"gl[uú]teo|hip thrust|p[eé]lvica|afundo|passada|agachamento|leg press|stiff|terra",quadriceps:"agachamento|leg press|extensora|afundo|passada|hack|avan[cç]o",posteriores:"flexora|stiff|terra|levantamento",panturrilha:"panturrilha|g[eê]meos|calf"};
-const FR={ombros:'<ellipse cx="62" cy="88" rx="15" ry="13"/><ellipse cx="138" cy="88" rx="15" ry="13"/>',peito:'<path d="M100 96c-6-6-18-6-28 2-4 8-2 20 6 26 8 4 18 2 22-4z"/><path d="M100 96c6-6 18-6 28 2 4 8 2 20-6 26-8 4-18 2-22-4z"/>',biceps:'<ellipse cx="50" cy="132" rx="9" ry="22"/><ellipse cx="150" cy="132" rx="9" ry="22"/>',antebraco:'<ellipse cx="42" cy="190" rx="8" ry="26"/><ellipse cx="158" cy="190" rx="8" ry="26"/>',abdomen:'<rect x="82" y="130" width="36" height="62" rx="12"/>',quadriceps:'<ellipse cx="82" cy="262" rx="17" ry="50"/><ellipse cx="118" cy="262" rx="17" ry="50"/>',panturrilha:'<ellipse cx="80" cy="355" rx="11" ry="34"/><ellipse cx="120" cy="355" rx="11" ry="34"/>'};
-const BK={trapezio:'<path d="M100 66L78 84l22 28 22-28z"/>',ombros:FR.ombros,costas:'<path d="M78 98l22 14 22-14 4 52-26 10-26-10z"/>',triceps:FR.biceps,antebraco:FR.antebraco,lombar:'<rect x="84" y="164" width="32" height="28" rx="10"/>',gluteos:'<ellipse cx="86" cy="212" rx="17" ry="17"/><ellipse cx="114" cy="212" rx="17" ry="17"/>',posteriores:'<ellipse cx="82" cy="274" rx="16" ry="40"/><ellipse cx="118" cy="274" rx="16" ry="40"/>',panturrilha:FR.panturrilha};
+const mir=d=>`<path d="${d}"/><path d="${d}" transform="matrix(-1 0 0 1 400 0)"/>`;
+const half=(d,st)=>`<path d="${d}" style="${st}"/><path d="${d}" style="${st}" transform="matrix(-1 0 0 1 400 0)"/>`;
+const OUT="M200 76L188 78L186 92C170 97 154 99 138 100L26 101L20 106L26 111L142 128C146 150 154 172 158 195C160 206 154 214 152 224C152 256 164 282 168 300C170 330 174 350 176 372L170 390L192 390L190 372C190 346 192 322 192 300C194 270 198 242 200 214";
+const SIL=`<g class="vfr"><circle cx="200" cy="212" r="176" class="sil" stroke-dasharray="3 5"/><rect x="20" y="30" width="360" height="360" class="sil" stroke-dasharray="3 5"/><path class="sil" d="M200 30V390M20 210H380" stroke-dasharray="2 6" opacity=".6"/><path class="sil" d="M140 98L54 46M138 114L56 64M260 98L346 46M262 114L344 64" stroke-dasharray="2 5" opacity=".6"/></g><ellipse cx="200" cy="52" rx="17" ry="23" style="fill:var(--s1);stroke:var(--ln);stroke-width:1.5"/>${half(OUT,"fill:var(--s1);stroke:none")}${half(OUT,"fill:none;stroke:var(--ln);stroke-width:1.5")}`;
+const FR={ombros:mir("M142 100C128 98 116 100 112 103L112 124C124 128 136 130 142 128Z"),peito:mir("M199 108C184 104 164 106 146 112C144 126 150 140 162 145C178 149 192 145 199 138Z"),biceps:mir("M112 103C98 102 84 101.5 66 102L66 117.5C84 119 100 121 112 124Z"),antebraco:mir("M66 102C52 102 38 101 26 101.5L26 111C40 112 54 114 66 117.5Z"),abdomen:mir("M199 148L187 148C185 168 185 190 187 208L199 210Z")+mir("M184 150C170 154 162 168 160 192C166 202 176 207 184 207C182 186 182 166 184 150Z"),quadriceps:mir("M199 220C186 226 168 228 154 226C154 254 164 282 169 298L191 296C195 270 199 244 199 220Z"),panturrilha:mir("M170 306L191 304C190 328 188 350 187 370L177 370C175 348 172 328 170 306Z")};
+const BK={trapezio:mir("M199 78L187 88L146 102C160 118 184 138 199 152Z"),ombros:FR.ombros,costas:mir("M198 154C186 142 166 134 146 130C150 150 154 172 160 192C176 190 190 186 198 182Z"),triceps:FR.biceps,antebraco:FR.antebraco,lombar:mir("M199 182L186 184C184 196 186 206 192 214L199 214Z"),gluteos:mir("M199 214C186 210 168 212 156 222C154 240 164 252 180 254C192 254 199 242 199 214Z"),posteriores:mir("M199 256C186 258 172 258 160 254C160 274 166 290 170 300L191 298C195 282 199 268 199 256Z"),panturrilha:mir("M170 304C168 320 172 340 178 360L188 360C192 340 192 320 191 302Z")};
 function MuscleMap(dn){
   let t=add(new Date(),-30),c={},ls={},un=0;
   dn.filter(e=>pd(e.k)>=t).forEach(e=>e.ex.forEach(x=>{let hit=0;for(let m in KW)if(new RegExp(KW[m],"i").test(x.n)){hit=1;c[m]=(c[m]||0)+1;(ls[m]=ls[m]||new Set()).add(x.n)}if(!hit)un++}));
-  let mx=Math.max(1,...Object.values(c)),sil='<circle class="sil" cx="100" cy="36" r="16"/><path class="sil" d="M92 52v16M108 52v16M68 78q32-14 64 0l-4 118q-28 12-56 0zM70 196l-8 150M130 196l8 150"/>';
-  let sv=(o,nm)=>`<div><svg viewBox="0 0 200 400" role="group" aria-label="${nm}">${sil}${Object.entries(o).map(([k,p])=>{let n=c[k]||0;return `<g class="mz${V.mu==k?" sel":""}" data-a="mu" data-m="${k}" role="button" tabindex="0" aria-label="${MU[k]}: ${n} registros" style="fill:${n?`rgba(58,166,182,${.25+.75*n/mx})`:"var(--s2)"}">${p}</g>`}).join("")}</svg><small class="mu">${nm}</small></div>`;
+  let mx=Math.max(1,...Object.values(c)),sil=SIL;
+  let sv=(o,nm)=>`<div><svg viewBox="0 0 400 420" role="group" aria-label="${nm}">${sil}${Object.entries(o).map(([k,p])=>{let n=c[k]||0;return `<g class="mz${V.mu==k?" sel":""}" data-a="mu" data-m="${k}" role="button" tabindex="0" aria-label="${MU[k]}: ${n} registros" style="fill:${n?`rgba(58,166,182,${.25+.75*n/mx})`:"var(--s2)"}">${p}</g>`}).join("")}<path class="vdt" d="${V.mv=="b"?"M200 90V214":"M187 166H213M187 184H213M200 148V208"}"/></svg><small class="mu">${nm}</small></div>`;
   let k=V.mu,info=k?`<p style="margin-top:10px"><b>${MU[k]}</b> · ${c[k]||0} registro${c[k]==1?"":"s"} em 30 dias${c[k]?`<br><small class="mu">${[...ls[k]].map(esc).join(", ")}</small>`:`<br><small class="mu">Nenhum exercício registrado para este grupo.</small>`}</p>`:`<p class="mu" style="margin-top:10px;font-size:13px">Toque em um músculo para ver os exercícios.</p>`;
   if(!Object.keys(c).length&&!un)return `<div class="empty">Cadastre exercícios com nome nos treinos e conclua-os para colorir os músculos trabalhados.</div>`;
-  return `<div class="body">${sv(FR,"Frente")}${sv(BK,"Costas")}</div><div class="lg"></div><div style="display:flex;justify-content:space-between"><small class="mu">Menos</small><small class="mu">Mais</small></div>${info}${un?`<p class="mu" style="font-size:13px">${un} exercício${un>1?"s":""} sem grupo muscular reconhecido.</p>`:""}`;
+  return `<div class="seg" style="margin:0 0 10px"><button data-a="mv" data-v="f" aria-pressed="${V.mv!="b"}">Frente</button><button data-a="mv" data-v="b" aria-pressed="${V.mv=="b"}">Costas</button></div><div class="vit">${V.mv=="b"?sv(BK,"Costas"):sv(FR,"Frente")}</div><div class="lg"></div><div style="display:flex;justify-content:space-between"><small class="mu">Menos</small><small class="mu">Mais</small></div>${info}${un?`<p class="mu" style="font-size:13px">${un} exercício${un>1?"s":""} sem grupo muscular reconhecido.</p>`:""}`;
 }
 function Evol(){
   let m=mon(new Date()),W=[...Array(8)].map((_,i)=>wk(add(m,-7*(7-i)))),c=W[7],p=W[6],al=[];
@@ -399,7 +414,7 @@ function Ajustes(){
   return `<h1>Ajustes</h1>
   <section class="card"><label for="nm">Seu nome</label><input id="nm" value="${esc(S.name)}" placeholder="Como quer ser chamado?" maxlength="30" data-c="name"></section>
   <section class="card"><h3>Tema</h3><div class="seg" style="margin:0"><button data-a="theme" data-v="dark" aria-pressed="${S.theme!="light"}">Escuro</button><button data-a="theme" data-v="light" aria-pressed="${S.theme=="light"}">Claro</button></div></section>
-  ${Conta()}<section class="card"><h3>Dados</h3><p class="mu">Tudo fica salvo neste aparelho. Faça backup de vez em quando.</p><div class="row"><button class="b" data-a="bk">Salvar backup</button><button class="b" data-a="rs">Restaurar backup</button></div><div class="row"><button class="b" data-a="exp">Exportar histórico</button><button class="b" data-a="wipe">Apagar tudo</button></div></section>`;
+  ${Lembretes()}${Conta()}<section class="card"><h3>Dados</h3><p class="mu">Tudo fica salvo neste aparelho. Faça backup de vez em quando.</p><div class="row"><button class="b" data-a="bk">Salvar backup</button><button class="b" data-a="rs">Restaurar backup</button></div><div class="row"><button class="b" data-a="exp">Exportar histórico</button><button class="b" data-a="wipe">Apagar tudo</button></div></section>`;
 }
 function Ed(){
   let x=E.x;
@@ -438,6 +453,59 @@ function mv(id,dir){let[i]=find(id),a=S.plan[i],j=a.findIndex(y=>y.id==id),n=j+d
 function tdraw(){let b=$("#timer");if(!T){b.hidden=true;return}b.hidden=false;b.innerHTML=`<b>${Math.floor(T.left/60)}:${pad(T.left%60)}</b><button class="ib" data-a="tadd">+15s</button><button class="ib" data-a="tstop">Parar</button>`}
 function tm(s){if(T)clearInterval(T.iv);T={left:s,iv:setInterval(()=>{T.left--;if(T.left<=0){clearInterval(T.iv);T=null;navigator.vibrate&&navigator.vibrate([250,120,250]);toast("Descanso acabou. Bora pra próxima série!")}tdraw()},1000)};tdraw()}
 
+
+const RK="nf-rounds";let R=Object.assign({d:300,n:5,rest:60},(()=>{try{return JSON.parse(localStorage.getItem(RK))||{}}catch(e){return{}}})());
+if(![180,240,300,600].includes(R.d))R.d=300;if(![0,30,60,90].includes(R.rest))R.rest=60;R.n=Math.min(20,Math.max(1,+R.n||5));
+Object.assign(R,{ph:"idle",r:1,left:R.d,end:0,run:false,iv:null,ac:null,wl:null});
+const rsave=()=>{try{localStorage.setItem(RK,JSON.stringify({d:R.d,n:R.n,rest:R.rest}))}catch(e){}};
+const rfmt=s=>pad(Math.floor(s/60))+":"+pad(s%60);
+const rph=()=>R.ph=="rest"?"DESCANSO":R.ph=="done"?"LUTA ENCERRADA":R.ph=="idle"?"PRONTO":R.run?"LUTANDO":"PAUSADO";
+const rrt=()=>R.ph=="idle"?R.n+(R.n>1?" rounds":" round"):"Round "+Math.min(R.r,R.n)+" de "+R.n;
+const rgt=()=>R.run?"PAUSAR":R.ph=="idle"||R.ph=="done"?"INICIAR":"CONTINUAR";
+const rcls=()=>"card cy-rest rd"+(R.ph=="rest"?" rest":"")+(R.ph=="fight"&&R.run&&R.left<=10?" last":"");
+function Rounds(){let lk=R.ph!="idle"&&R.ph!="done"?" disabled":"",ch=(v,arr,lab)=>arr.map(x=>`<button class="b cy-button" data-a="rd" data-k="${v}" data-v="${x}" aria-pressed="${R[v]==x}"${lk}>${lab(x)}</button>`).join("");
+  return `<section class="${rcls()}" id="rd"><div class="cy-section">// CRONÔMETRO DE ROUNDS</div><div class="ph" id="rd-p">${rph()}</div><div class="big" id="rd-t">${rfmt(R.left)}</div><p class="mu" id="rd-r" style="text-align:center">${rrt()}</p>
+  <small class="mu">Duração do round</small><div class="chips">${ch("d",[180,240,300,600],x=>x/60+" min")}</div>
+  <small class="mu">Descanso entre rounds</small><div class="chips">${ch("rest",[0,30,60,90],x=>x?x+"s":"Sem")}</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin:8px 0"><small class="mu">Quantidade de rounds</small><div style="display:flex;gap:10px;align-items:center"><button class="ib" data-a="rn" data-n="-1"${lk} aria-label="Menos um round">−</button><b>${R.n}</b><button class="ib" data-a="rn" data-n="1"${lk} aria-label="Mais um round">+</button></div></div>
+  <div class="tp"><button class="b pri cy-button" id="rd-go" data-a="rgo">${rgt()}</button><button class="b cy-button" data-a="rrs">ZERAR</button><button class="b cy-button" data-a="rfo">TELA CHEIA</button></div></section>`}
+function rdraw(){rfsUpd();let c=$("#rd");if(!c)return;c.className=rcls();$("#rd-t").textContent=rfmt(R.left);$("#rd-p").textContent=rph();$("#rd-r").textContent=rrt();$("#rd-go").textContent=rgt()}
+function beep(f,ms,t){try{R.ac=R.ac||new(window.AudioContext||window.webkitAudioContext)();let a=R.ac,o=a.createOscillator(),g=a.createGain(),s=a.currentTime+(t||0);o.type="sine";o.frequency.value=f;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.7,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+ms/1000);o.start(s);o.stop(s+ms/1000+.05)}catch(e){}}
+function bell(n){for(let i=0;i<n;i++)beep(i?880:1046,380,i*.5);try{navigator.vibrate&&navigator.vibrate(n>1?[300,120,300,120,300]:[500])}catch(e){}}
+async function wlock(on){try{if(on&&navigator.wakeLock&&!R.wl){R.wl=await navigator.wakeLock.request("screen");R.wl.addEventListener("release",()=>{R.wl=null})}else if(!on&&R.wl){let w=R.wl;R.wl=null;await w.release()}}catch(e){R.wl=null}}
+function rstart(){if(R.ph=="idle"||R.ph=="done"){R.ph="fight";R.r=1;R.left=R.d;bell(1)}else beep(1,1,0);R.end=Date.now()+R.left*1000;R.run=true;clearInterval(R.iv);R.iv=setInterval(rtick,250);wlock(true);rdraw()}
+function rpause(){R.left=Math.max(0,Math.ceil((R.end-Date.now())/1000));R.run=false;clearInterval(R.iv);wlock(false);rdraw()}
+function rnext(sec,ph,n){R.ph=ph;R.left=sec;R.end=Date.now()+sec*1000;bell(n)}
+function rtick(){let l=Math.max(0,Math.ceil((R.end-Date.now())/1000));
+  if(l!=R.left){R.left=l;if(R.ph=="fight"&&(l==10||(l>0&&l<=3)))beep(l==10?520:700,160)}
+  if(l<=0){
+    if(R.ph=="fight"){if(R.r>=R.n){R.ph="done";R.run=false;clearInterval(R.iv);wlock(false);bell(3)}else if(R.rest>0)rnext(R.rest,"rest",2);else{R.r++;rnext(R.d,"fight",1)}}
+    else if(R.ph=="rest"){R.r++;rnext(R.d,"fight",1)}
+  }
+  rdraw()}
+function rreset(){clearInterval(R.iv);R.run=false;R.ph="idle";R.r=1;R.left=R.d;wlock(false)}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&R.run)wlock(true)});
+
+
+function rfsUpd(){let f=$("#rdfs");if(!f||f.hidden||!$("#fs-t"))return;f.className=(R.ph=="rest"?"rest":"")+(R.ph=="fight"&&R.run&&R.left<=10?" last":"");$("#fs-p").textContent=rph();$("#fs-t").textContent=rfmt(R.left);$("#fs-r").textContent=rrt();$("#fs-go").textContent=rgt()}
+function rfsOpen(){let f=$("#rdfs");if(!$("#fs-t"))f.innerHTML='<div class="fp" id="fs-p"></div><div class="ft" id="fs-t"></div><div class="fr" id="fs-r"></div><div class="fb"><button class="b pri" id="fs-go" data-a="rgo"></button><button class="b" data-a="rrs">ZERAR</button><button class="b" data-a="rfc">FECHAR</button></div>';f.hidden=false;rfsUpd();try{let e=document.documentElement;if(!document.fullscreenElement&&e.requestFullscreen)e.requestFullscreen({navigationUI:"hide"}).catch(()=>{})}catch(x){}}
+function rfsClose(){let f=$("#rdfs");if(f)f.hidden=true;try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
+// lembretes 1h antes
+function ntf(t,b,tag){let o={body:b,tag:tag,icon:"logo.png",vibrate:[200,100,200]},fb=()=>{try{new Notification(t,o)}catch(e){}};try{navigator.serviceWorker?navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(t,o):fb()).catch(fb):fb()}catch(e){fb()}}
+function ntfCheck(){if(!("Notification" in window)||Notification.permission!="granted"||!S||!S.plan)return;let now=new Date(),k=ds(now),L=S.log[k]||{};
+  (S.plan[wd(now)]||[]).forEach(x=>{if(!x.h||L[x.id])return;let[hh,mm]=x.h.split(":"),st=new Date(now.getFullYear(),now.getMonth(),now.getDate(),+hh,+mm),mins=Math.round((st-now)/60000);
+    if(!(mins>0&&mins<=60))return;let key="nf-n-"+k+"-"+x.id;try{if(localStorage.getItem(key))return;localStorage.setItem(key,"1")}catch(e){}
+    ntf(mins>=55?"Treino em 1 hora":"Treino em "+mins+" min",(x.n||x.t)+" às "+x.h,key)})}
+setInterval(ntfCheck,30000);setTimeout(ntfCheck,2500);document.addEventListener("visibilitychange",()=>{if(!document.hidden)ntfCheck()});
+function Lembretes(){let p="Notification" in window?Notification.permission:"unsupported";
+  return `<section class="card"><h3>Lembretes de treino</h3><p class="mu">${p=="granted"?"Aviso ativado neste aparelho: 1 hora antes de cada treino que tem horário.":p=="denied"?"As notificações estão bloqueadas. Libere nas configurações do navegador ou do app.":p=="unsupported"?"Este navegador não suporta notificações.":"Receba um aviso 1 hora antes de cada treino que tem horário."}</p><p class="mu" style="font-size:12px">O aviso só aparece com o app aberto ou em segundo plano. Para tocar sempre, mesmo com o app fechado, use o calendário.</p><div class="row">${p=="default"?'<button class="b pri" data-a="ntf">Ativar avisos</button>':""}<button class="b" data-a="ics">Lembretes no calendário</button></div></section>`}
+function icsDate(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00"}
+function icsText(v){return String(v||"").replace(/\\/g,"\\\\").replace(/[,;]/g,m=>"\\"+m).replace(/\r?\n/g,"\\n")}
+function icsMake(){let t0=new Date();t0.setHours(0,0,0,0);let out=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Norte Flow//Treino//PT","CALSCALE:GREGORIAN"],n=0,sk=0,BD=["MO","TU","WE","TH","FR","SA","SU"];
+  S.plan.forEach((a,i)=>a.forEach(x=>{if(!x.h){sk++;return}let d=add(mon(t0),i);if(d<t0)d=add(d,7);let[hh,mm]=x.h.split(":"),st=new Date(d.getFullYear(),d.getMonth(),d.getDate(),+hh,+mm),en=new Date(st.getTime()+(num(x.d)||60)*60000);n++;
+    out.push("BEGIN:VEVENT","UID:"+x.id+"@norteflow","DTSTAMP:"+new Date().toISOString().replace(/[-:]|\.\d+/g,""),"DTSTART:"+icsDate(st),"DTEND:"+icsDate(en),"RRULE:FREQ=WEEKLY;BYDAY="+BD[i],"SUMMARY:"+icsText("Treino: "+(x.n||x.t)),"DESCRIPTION:"+icsText(x.t+(x.o?" - "+x.o:"")),"BEGIN:VALARM","TRIGGER:-PT1H","ACTION:DISPLAY","DESCRIPTION:Treino em 1 hora","END:VALARM","END:VEVENT")}));
+  out.push("END:VCALENDAR");return{txt:out.join("\r\n"),n,sk}}
+
 const A={
   tab:d=>{V.tab=d.t;render();scrollTo(0,0)},
   mode:d=>{V.mode=d.m;render()},
@@ -466,6 +534,14 @@ const A={
   close:closeM,
   yes:()=>{let f=CB;closeM();f&&f()},
   tm:d=>tm(+d.s),
+  rd:d=>{R[d.k]=+d.v;rsave();rreset();render()},
+  rn:d=>{R.n=Math.min(20,Math.max(1,R.n+ +d.n));rsave();rreset();render()},
+  rgo:()=>{if(R.run)rpause();else{rstart();rfsOpen()}},
+  rfo:()=>rfsOpen(),rfc:()=>rfsClose(),
+  rrs:()=>{rreset();rfsClose();render()},
+  mv:d=>{V.mv=d.v;render()},
+  ntf:()=>{try{Notification.requestPermission().then(p=>{render();if(p=="granted"){toast("Avisos ativados");ntfCheck()}})}catch(e){toast("Não foi possível ativar")}},
+  ics:()=>{let r=icsMake();if(!r.n)return toast("Nenhum treino tem horário definido");let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([r.txt],{type:"text/calendar"}));a.download="treinos-norte-flow.ics";document.body.appendChild(a);a.click();a.remove();toast(r.n+" treino"+(r.n>1?"s":"")+" no arquivo"+(r.sk?" ("+r.sk+" sem horário ficaram de fora)":""))},
   tadd:()=>{if(T){T.left+=15;tdraw()}},
   tstop:()=>{if(T)clearInterval(T.iv);T=null;tdraw()},
   theme:d=>{S.theme=d.v;save();render()},
