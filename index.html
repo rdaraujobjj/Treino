@@ -223,6 +223,8 @@ main{position:relative}
 :root:not([data-theme="light"]) h3{color:#d2d2d6}
 :root:not([data-theme="light"]) .b{background:#111113;border-color:#2a2a2e;color:#ececee}
 :root:not([data-theme="light"]) .b[aria-pressed="true"]{background:var(--ac);color:var(--on);border-color:var(--ac);font-weight:700}
+.al{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--ln)}.al:last-child{border:0}.aln{font-weight:600;min-width:0;overflow-wrap:anywhere}.alb{display:flex;gap:8px;flex:none}.alb .b{min-width:56px;padding:10px 12px}.al.off{opacity:.5}
+:root:not([data-theme="light"]) .alb .b[data-s="falta"][aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
 :root:not([data-theme="light"]) .ck .b.r3[aria-pressed="true"],:root:not([data-theme="light"]) .ck .b.rr[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
 :root:not([data-theme="light"]) .b.pri,:root:not([data-theme="light"]) .pb{background:linear-gradient(110deg,#34a0b0,#4ab0c1);box-shadow:none}
 :root:not([data-theme="light"]) .ib{background:#0d0d0f;border-color:#2a2a2d;color:#ececee}
@@ -272,6 +274,7 @@ main{position:relative}
 <div id="rdfs" hidden></div>
 <nav id="nav" aria-label="Navegação principal">
 <button data-a="tab" data-t="home"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Início</button>
+<button data-a="tab" data-t="ch" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6M9 13l2 2 4-4"/></svg>Chamada</button>
 <button data-a="tab" data-t="ag"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Agenda</button>
 <button data-a="tab" data-t="cr"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>Timer</button>
 <button data-a="tab" data-t="ev"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Evolução</button>
@@ -299,7 +302,7 @@ const fd=k=>k.slice(8)+"/"+k.slice(5,7);
 let S,E=null,CB=null,T=null;
 const CFG=window.NF_CLOUD||{},CLOUD=!!(window.supabase&&/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")&&(CFG.key||"").length>20),sb=CLOUD?window.supabase.createClient(CFG.url,CFG.key):null;
 let U=null,READY=!CLOUD,SY=0,pt=null;
-const VER="2026-11-25-coach12",WHY=CLOUD?"":!window.supabase?"a biblioteca da nuvem não carregou":!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")?"a URL no config.js não está certa":"a chave no config.js não está certa";
+const VER="2026-11-25-coach13",WHY=CLOUD?"":!window.supabase?"a biblioteca da nuvem não carregou":!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")?"a URL no config.js não está certa":"a chave no config.js não está certa";
 let V={tab:"home",mode:"dia",week:mon(new Date()),sel:ds(new Date()),month:new Date(),open:null,ex:"",wi:7,mu:""};
 const done=k=>Object.values(S.log[k]||{}).filter(e=>e.s=="d").map(e=>Array.isArray(e.ex)?e:{...e,ex:[]});
 function nz(){try{if(S&&!S.seedCal){S.tpl=S.tpl||[];if(!S.tpl.some(t=>/calist/i.test(t.n)))S.tpl.unshift({id:"cal"+Date.now().toString(36),n:"Calistenia (minha série)",t:"Funcional",d:"45",i:"Moderada",o:"Série fixa. Controle a descida e pare se sentir dor.",ex:[{n:"Barra fixa",s:"5",r:"7",w:"",rest:"90"},{n:"Paralelas",s:"5",r:"10",w:"",rest:"90"},{n:"Barra fixa pronada",s:"5",r:"5",w:"",rest:"90"}]});S.seedCal=1}}catch(e){}
@@ -341,7 +344,7 @@ async function pull(){
   }catch(e){SY=-1;setSync()}
 }
 function adopt(){if(S.uid&&S.uid!=U.id){try{localStorage.removeItem(K)}catch(e){}load()}S.uid=U.id;store()}
-async function boot(){if(!CLOUD)return;try{let{data}=await sb.auth.getSession();U=data.session?data.session.user:null}catch(e){}READY=true;if(U)adopt();render();pull()}
+async function boot(){if(!CLOUD)return;try{let{data}=await sb.auth.getSession();U=data.session?data.session.user:null}catch(e){}READY=true;if(U)adopt();render();pull();loadRole()}
 function Login(){return `<section class="card" style="margin-top:40px;text-align:center"><img src="logo.png" alt="Norte Flow Jiu-Jitsu" width="96" style="border-radius:14px;background:#000"><h2 style="margin:12px 0 4px">Entrar</h2><p class="mu">Use o e-mail e a senha que você recebeu do professor.</p><label for="lg-e" style="text-align:left">E-mail</label><input id="lg-e" type="email" autocomplete="username" inputmode="email"><label for="lg-p" style="text-align:left">Senha</label><input id="lg-p" type="password" autocomplete="current-password"><div class="row"><button class="b pri" data-a="login">Entrar</button></div></section>`}
 function Conta(){
   if(!CLOUD)return `<section class="card"><h3>Conta</h3><p class="mu">Nuvem desligada: ${WHY}. Os dados ficam só neste aparelho.</p><p class="mu" style="font-size:12px">Versão ${VER}</p></section>`;
@@ -521,7 +524,7 @@ function Ajustes(){
   ${KneeCfg()}${CompCfg()}${Escala()}${Lembretes()}${Conta()}<section class="card"><h3>Dados</h3><p class="mu">Tudo fica salvo neste aparelho. Faça backup de vez em quando.</p><div class="row"><button class="b" data-a="bk">Salvar backup</button><button class="b" data-a="rs">Restaurar backup</button></div><div class="row"><button class="b" data-a="exp">Exportar histórico</button><button class="b" data-a="wipe">Apagar tudo</button></div></section>`;
 }
 /* ---------- grade da equipe e atalhos ---------- */
-const GRD=[{t:"Jiu-Jitsu",n:"Aula de jiu-jitsu",h:"19:00",d:"60",days:[0,1,2,3,4,5,6]},{t:"Jiu-Jitsu",n:"Aula de jiu-jitsu",h:"20:00",d:"60",days:[0,1,2,3,4,5,6]},{t:"Luta livre",n:"Aula de luta livre",h:"09:30",d:"60",days:[0,2,4]},{t:"Luta livre",n:"Aula de luta livre",h:"21:00",d:"60",days:[1,3]}],GRADE=()=>S.grade||GRD;
+const GRD=[{t:"Jiu-Jitsu",n:"Aula de jiu-jitsu",h:"19:00",d:"60",days:[0,1,2,3,4,5,6]},{t:"Jiu-Jitsu",n:"Aula de jiu-jitsu",h:"20:00",d:"60",days:[0,1,2,3,4,5,6]},{t:"Luta livre",n:"Aula de luta livre",h:"09:30",d:"60",days:[0,2,4]},{t:"Luta livre",n:"Aula de luta livre",h:"21:00",d:"60",days:[1,3]}],GRADE=()=>S.grade||(ROLE=="professor"?GRD.filter(a=>a.t=="Jiu-Jitsu"):GRD);
 function Quick(){let G=GRADE(),dk=ds(add(mon(pd(V.sel)),E.day)),g=G.map((a,i)=>[a,i]).filter(([a])=>a.days.includes(E.day)&&!inWork(dk,a.h)),u=(S.tpl||[]).slice(0,8);
   return (plOn(dk)===true?`<p class="mu" style="font-size:13px;margin:0 0 6px">Dia de plantão: sem treino das ${WORK[0]} às ${WORK[1]}.</p>`:"")+(g.length?`<small class="mu">Aulas da equipe neste dia</small><div class="pre">${g.map(([a,i])=>`<button class="b" type="button" data-a="qg" data-i="${i}">${esc(a.t)} · ${esc(a.h)}</button>`).join("")}</div>`:"")+(u.length?`<small class="mu">Meus modelos (um toque preenche tudo)</small><div class="pre">${u.map(t=>`<button class="b" type="button" data-a="qm" data-id="${t.id}">${esc(t.n)}</button>`).join("")}</div>`:"")}
 function Ed(){
@@ -546,7 +549,9 @@ function render(){
   if(themeColor)themeColor.content=S.theme=="light"?"#eef3f4":"#000000";
   if(CLOUD&&(!READY||!U)){$("#nav").hidden=true;$("#view").innerHTML=READY?Login():'<p class="mu" style="text-align:center;margin-top:80px">Carregando…</p>';return}
   $("#nav").hidden=false;
-  $("#view").innerHTML=(V.tab=="home"?"":'<img class="bc" src="logo.png" alt="Norte Flow Jiu-Jitsu">')+({home:Home,ag:Agenda,cr:Cron,ev:Evol,aj:Ajustes})[V.tab]();
+  if(ROLE=="professor"&&["home","cr","ev"].includes(V.tab))V.tab="ch";
+  $$("#nav button").forEach(b=>{let t=b.dataset.t;b.hidden=t=="ch"?!isStaff():ROLE=="professor"&&(t=="home"||t=="cr"||t=="ev")});
+  $("#view").innerHTML=(V.tab=="home"?"":'<img class="bc" src="logo.png" alt="Norte Flow Jiu-Jitsu">')+({home:Home,ag:Agenda,cr:Cron,ev:Evol,aj:Ajustes,ch:Chamada})[V.tab]();
   $$("#nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.t==V.tab));rmini()
 }
 function M(h){let m=$("#modal");m.innerHTML=h;m.hidden=false}
@@ -793,7 +798,55 @@ function Tpls(d){let u=S.tpl||[],li=(t,id,del)=>`<div class="er"><span><b>${esc(
   return `<div class="sheet"><h2>Modelos de treino</h2><p class="mu">Adiciona em ${DAYS[d]} (repete toda semana).</p><h3>Meus modelos</h3>${u.length?u.map(t=>li(t,t.id,1)).join(""):`<p class="mu">Nenhum ainda. Ao criar ou editar um treino, toque em “Salvar como modelo”.</p>`}<h3>Recomendados</h3>${Object.keys(REC).map(k=>li(REC[k],k,0)).join("")}<div class="row"><button class="b" data-a="close">Fechar</button></div></div>`}
 function addT(t,day){let x=clone(t);x.id=uid();x.h=x.h||"";ins(day,x);save();render();toast("Adicionado: "+DAYS[day])}
 
+/* ---------- papéis e chamada (equipe) ---------- */
+let ROLE=null;
+const TURMAS=["19:00","20:00"],CH={dia:ds(new Date()),turma:"19:00",al:[],pr:{},err:""},isStaff=()=>ROLE=="dono"||ROLE=="professor";
+const fdm=k=>k.slice(8)+"/"+k.slice(5,7);
+async function pgAll(q){let o=[],i=0;for(;;){let{data,error}=await q().range(i,i+999);if(error)throw error;o=o.concat(data||[]);if(!data||data.length<1000)break;i+=1000}return o}
+async function loadRole(){if(!CLOUD||!U)return;try{let{data}=await sb.from("perfis").select("papel").eq("user_id",U.id).maybeSingle();ROLE=data?data.papel:null}catch(e){ROLE=null}
+  render();if(isStaff())chLoad()}
+async function chLoad(){if(!CLOUD||!U||!isStaff())return;
+  if(!navigator.onLine){CH.err="Sem internet. A chamada precisa de conexão.";if(V.tab=="ch")render();return}
+  try{let a=await sb.from("alunos").select("id,nome,ativo").order("nome");if(a.error)throw a.error;
+    let p=await sb.from("presencas").select("aluno_id,status").eq("dia",CH.dia).eq("turma",CH.turma);if(p.error)throw p.error;
+    CH.al=a.data||[];CH.pr={};(p.data||[]).forEach(r=>CH.pr[r.aluno_id]=r.status);CH.err=""}
+  catch(e){CH.err="Não consegui carregar. Confere se o SQL das tabelas foi rodado e se elas estão liberadas na Data API."}
+  if(V.tab=="ch")render()}
+function Chamada(){
+  if(!isStaff())return `<section class="card"><p class="mu">Esta área é só para a equipe.</p></section>`;
+  let at=CH.al.filter(a=>a.ativo),pr=at.filter(a=>CH.pr[a.id]=="presente").length,pe=at.filter(a=>CH.pr[a.id]=="pendente").length,hj=CH.dia==ds(new Date());
+  let row=a=>{let st=CH.pr[a.id];return `<div class="al"><span class="aln">${esc(a.nome)}</span><span class="alb"><button class="b${st=="pendente"?" pri":""}" data-a="chm" data-id="${a.id}" data-s="presente" aria-pressed="${st=="presente"}" aria-label="Presente: ${esc(a.nome)}">${st=="pendente"?"Confirmar":"✓"}</button><button class="b" data-a="chm" data-id="${a.id}" data-s="falta" aria-pressed="${st=="falta"}" aria-label="Falta: ${esc(a.nome)}">✗</button></span></div>`};
+  return `<section class="card"><div class="cy-section">// CHAMADA</div>
+  <div class="row" style="align-items:center;gap:8px"><button class="b" data-a="chd" data-v="-1" aria-label="Dia anterior" style="min-width:44px;padding:10px 0;flex:none">‹</button><input type="date" id="ch-d" value="${CH.dia}" style="flex:1;min-width:0;font-size:14px;padding:10px 6px"><button class="b" data-a="chd" data-v="1" aria-label="Próximo dia" style="min-width:44px;padding:10px 0;flex:none">›</button></div>
+  <div class="seg">${TURMAS.map(t=>`<button data-a="cht" data-v="${t}" aria-pressed="${CH.turma==t}">Jiu-jitsu ${t.slice(0,2)}h</button>`).join("")}</div>
+  ${CH.err?`<p class="mu" style="color:var(--red)">${esc(CH.err)}</p>`:`<p class="mu" style="margin:0 0 6px">${hj?"Hoje":esc(fdm(CH.dia))} · ${pr} presentes${pe?` · ${pe} aguardando confirmação`:""} · ${at.length} alunos</p>`}
+  ${at.length?at.map(row).join(""):`<p class="mu">Nenhum aluno cadastrado ainda. Cadastre abaixo.</p>`}</section>
+  <section class="card"><div class="cy-section">// ALUNOS</div><div class="row" style="gap:8px"><input id="ch-n" type="text" maxlength="80" placeholder="Nome do aluno" autocomplete="off" style="flex:1;min-width:0"><button class="b pri" data-a="chn">Cadastrar</button></div>
+  <div class="row" style="gap:8px;margin-top:10px"><button class="b" data-a="chf" style="flex:1">Frequência do mês</button><button class="b" data-a="cha" style="flex:1">Gerenciar alunos</button></div></section>`}
+function alunosM(){let l=CH.al.slice().sort((a,b)=>b.ativo-a.ativo||a.nome.localeCompare(b.nome));
+  M(`<div class="sheet"><h2>Alunos</h2>${l.length?l.map(a=>`<div class="al${a.ativo?"":" off"}"><span class="aln">${esc(a.nome)}${a.ativo?"":" (inativo)"}</span><button class="b" data-a="chi" data-id="${a.id}" data-on="${a.ativo?0:1}">${a.ativo?"Inativar":"Reativar"}</button></div>`).join(""):`<p class="mu">Nenhum aluno.</p>`}<div class="row" style="margin-top:12px"><button class="b" data-a="close">Fechar</button></div></div>`)}
 const A={
+  chm:async d=>{let id=d.id,s=d.s,cur=CH.pr[id];if(!navigator.onLine)return toast("Sem internet");
+    let rm=cur==s;if(cur=="pendente"&&s=="presente")rm=false;
+    rm?delete CH.pr[id]:CH.pr[id]=s;render();
+    try{let r=rm?await sb.from("presencas").delete().eq("aluno_id",id).eq("dia",CH.dia).eq("turma",CH.turma):await sb.from("presencas").upsert({aluno_id:id,dia:CH.dia,turma:CH.turma,status:s,marcado_por:U.id,atualizado_em:new Date().toISOString()});if(r.error)throw r.error}
+    catch(e){cur?CH.pr[id]=cur:delete CH.pr[id];render();toast("Não salvou. Tente de novo")}},
+  chd:d=>{let x=pd(CH.dia);CH.dia=ds(add(x,+d.v));CH.pr={};render();chLoad()},
+  cht:d=>{CH.turma=d.v;CH.pr={};render();chLoad()},
+  chn:async()=>{let el=$("#ch-n"),n=(el.value||"").trim().replace(/\s+/g," ");if(!n)return toast("Digite o nome do aluno");
+    if(CH.al.some(a=>a.nome.toLowerCase()==n.toLowerCase()))return toast("Esse nome já está cadastrado");
+    let r=await sb.from("alunos").insert({nome:n});if(r.error)return toast("Não consegui cadastrar");
+    await chLoad();toast("Aluno cadastrado")},
+  cha:()=>alunosM(),
+  chi:async d=>{let r=await sb.from("alunos").update({ativo:d.on=="1"}).eq("id",d.id);if(r.error)return toast("Não consegui atualizar");
+    await chLoad();alunosM()},
+  chf:async()=>{if(!navigator.onLine)return toast("Sem internet");toast("Calculando…");
+    try{let ini=ds(add(new Date(),-30)),mes=ds(new Date(new Date().getFullYear(),new Date().getMonth(),1));
+      let rows=await pgAll(()=>sb.from("presencas").select("aluno_id,dia").eq("status","presente").gte("dia",ini).order("dia").order("aluno_id").order("turma"));
+      let by={};rows.forEach(r=>{let o=by[r.aluno_id]=by[r.aluno_id]||{n:0,u:""};if(r.dia>=mes)o.n++;if(r.dia>o.u)o.u=r.dia});
+      let l=CH.al.filter(a=>a.ativo).map(a=>({nome:a.nome,n:(by[a.id]||{}).n||0,u:(by[a.id]||{}).u||""})).sort((a,b)=>(a.u||"").localeCompare(b.u||"")||a.nome.localeCompare(b.nome));
+      M(`<div class="sheet"><h2>Frequência do mês</h2><p class="mu" style="margin-top:0">Presenças no mês e última vez que veio (últimos 30 dias).</p>${l.length?l.map(a=>`<div class="al"><span class="aln">${esc(a.nome)}</span><span class="mu" style="text-align:right;flex:none">${a.n} no mês<br><small>${a.u?"última: "+esc(fdm(a.u)):"30+ dias sem vir"}</small></span></div>`).join(""):`<p class="mu">Nenhum aluno ativo.</p>`}<div class="row" style="margin-top:12px"><button class="b" data-a="close">Fechar</button></div></div>`)}
+    catch(e){toast("Não consegui carregar a frequência")}},
   tab:d=>{V.tab=d.t;render();scrollTo(0,0)},
   mode:d=>{V.mode=d.m;render()},
   wk:d=>{V.week=add(V.week,7*d.n);V.sel=ds(add(V.week,wd(pd(V.sel))));V.open=null;render()},
@@ -855,8 +908,8 @@ const A={
   login:async()=>{let e=$("#lg-e").value.trim(),p=$("#lg-p").value;if(!e||!p)return toast("Informe e-mail e senha");
     let{data,error}=await sb.auth.signInWithPassword({email:e,password:p});
     if(error||!data.user)return toast(navigator.onLine?"E-mail ou senha incorretos":"Sem internet para entrar");
-    U=data.user;adopt();render();pull()},
-  logout:async()=>{try{await sb.auth.signOut()}catch(e){}U=null;render()},
+    U=data.user;adopt();render();pull();loadRole()},
+  logout:async()=>{try{await sb.auth.signOut()}catch(e){}U=null;ROLE=null;CH.al=[];CH.pr={};CH.err="";V.tab="home";render()},
   sync:()=>{pull();toast("Sincronizando…")},
   pw:async()=>{let v=$("#np").value;if(v.length<8)return toast("Use pelo menos 8 caracteres");let{error}=await sb.auth.updateUser({password:v});$("#np").value="";toast(error?"Não foi possível trocar a senha":"Senha trocada")},
   wb:d=>{V.wi=+d.i;render()},mu:d=>{V.mu=V.mu==d.m?"":d.m;render()},
@@ -886,6 +939,7 @@ A.cadd=d=>{let t=REC[d.src];if(t)addT(t,wd(pd(d.k)))};
 document.addEventListener("click",e=>{if(e.target.id=="modal")return closeM();let b=e.target.closest("[data-a]");if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset)});
 document.addEventListener("change",e=>{let t=e.target,c=t.dataset.c;if(!c)return;
   if(c=="name")S.name=t.value.trim();if(c=="kgoal"){S.kj=S.kj||{on:1};S.kj.goal=Math.max(1,Math.min(7,Math.floor(num(t.value))||3))}if(c=="plref"&&t.value)S.pl={ref:t.value,x:{}};if(c=="goal")S.goal=Math.max(0,Math.floor(num(t.value)));if(c=="ex")V.ex=t.value;save();render()});
+document.addEventListener("change",e=>{if(e.target.id=="ch-d"){CH.dia=e.target.value||ds(new Date());CH.pr={};chLoad()}});
 document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.id=="lg-p"){A.login();return}if(e.key=="Escape"&&!$("#modal").hidden)closeM();if((e.key=="Enter"||e.key==" ")&&e.target.matches&&e.target.matches("g[data-a]")){e.preventDefault();A[e.target.dataset.a](e.target.dataset)}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&U&&$("#modal").hidden)pull()});addEventListener("online",()=>{if(U)pull()});
 load();nz();render();boot();
