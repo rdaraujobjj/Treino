@@ -222,6 +222,8 @@ main{position:relative}
 :root:not([data-theme="light"]) .card{background:linear-gradient(145deg,#0c0c0d,#060607);border-color:#222225;box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}
 :root:not([data-theme="light"]) h3{color:#d2d2d6}
 :root:not([data-theme="light"]) .b{background:#111113;border-color:#2a2a2e;color:#ececee}
+:root:not([data-theme="light"]) .b[aria-pressed="true"]{background:var(--ac);color:var(--on);border-color:var(--ac);font-weight:700}
+:root:not([data-theme="light"]) .ck .b.r3[aria-pressed="true"],:root:not([data-theme="light"]) .ck .b.rr[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
 :root:not([data-theme="light"]) .b.pri,:root:not([data-theme="light"]) .pb{background:linear-gradient(110deg,#34a0b0,#4ab0c1);box-shadow:none}
 :root:not([data-theme="light"]) .ib{background:#0d0d0f;border-color:#2a2a2d;color:#ececee}
 :root:not([data-theme="light"]) .rb{stroke:#1d1d20}
@@ -297,10 +299,11 @@ const fd=k=>k.slice(8)+"/"+k.slice(5,7);
 let S,E=null,CB=null,T=null;
 const CFG=window.NF_CLOUD||{},CLOUD=!!(window.supabase&&/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")&&(CFG.key||"").length>20),sb=CLOUD?window.supabase.createClient(CFG.url,CFG.key):null;
 let U=null,READY=!CLOUD,SY=0,pt=null;
-const VER="2026-11-24-coach9",WHY=CLOUD?"":!window.supabase?"a biblioteca da nuvem não carregou":!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")?"a URL no config.js não está certa":"a chave no config.js não está certa";
+const VER="2026-11-25-coach12",WHY=CLOUD?"":!window.supabase?"a biblioteca da nuvem não carregou":!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")?"a URL no config.js não está certa":"a chave no config.js não está certa";
 let V={tab:"home",mode:"dia",week:mon(new Date()),sel:ds(new Date()),month:new Date(),open:null,ex:"",wi:7,mu:""};
 const done=k=>Object.values(S.log[k]||{}).filter(e=>e.s=="d").map(e=>Array.isArray(e.ex)?e:{...e,ex:[]});
-function nz(){try{Object.values(S.log||{}).forEach(d=>Object.values(d).forEach(e=>{if(!Array.isArray(e.ex))e.ex=[]}))}catch(e){}}
+function nz(){try{if(S&&!S.seedCal){S.tpl=S.tpl||[];if(!S.tpl.some(t=>/calist/i.test(t.n)))S.tpl.unshift({id:"cal"+Date.now().toString(36),n:"Calistenia (minha série)",t:"Funcional",d:"45",i:"Moderada",o:"Série fixa. Controle a descida e pare se sentir dor.",ex:[{n:"Barra fixa",s:"5",r:"7",w:"",rest:"90"},{n:"Paralelas",s:"5",r:"10",w:"",rest:"90"},{n:"Barra fixa pronada",s:"5",r:"5",w:"",rest:"90"}]});S.seedCal=1}}catch(e){}
+try{Object.values(S.log||{}).forEach(d=>Object.values(d).forEach(e=>{if(!Array.isArray(e.ex))e.ex=[]}))}catch(e){}}
 const clone=o=>JSON.parse(JSON.stringify(o));
 
 function load(){
@@ -350,7 +353,7 @@ function wk(m){let pl=0,dn=0,cn=0,min=0;
 function streak(){let d=new Date(),n=0,t=ds(d);d.setHours(0,0,0,0);
   for(let i=0;i<400;i++,d=add(d,-1)){let k=ds(d);if(done(k).length)n++;else if(k!=t&&S.plan[wd(d)].length)break}return n}
 function next(){let now=new Date(),t=pad(now.getHours())+":"+pad(now.getMinutes());
-  for(let i=0;i<7;i++){let d=add(now,i),k=ds(d),l=S.plan[wd(d)].filter(x=>!S.log[k]?.[x.id]&&(i>0||!x.h||x.h>=t));if(l.length)return{d,k,x:l[0],i}}return null}
+  for(let i=0;i<7;i++){let d=add(now,i),k=ds(d),l=S.plan[wd(d)].filter(x=>!S.log[k]?.[x.id]&&!inWork(k,x.h)&&(i>0||!x.h||x.h>=t));if(l.length)return{d,k,x:l[0],i}}return null}
 
 /* ---------- telas ---------- */
 /* ---------- recuperação: estimativa de carga e prontidão ---------- */
@@ -383,20 +386,23 @@ function Rcv(){let r=rcv(),c=r.n<35?"#ff5a4d":r.n<55?"#ff8a3d":r.n<75?"#ffb020":
   <p class="mu" style="margin:8px 0 0;font-size:13px">Carga dos últimos 7 dias: <b>${r.wk7} pts</b>${r.cmp!==null?" ("+(r.cmp>=0?"+":"")+r.cmp+"% da sua média)":""} · ${r.st} dia${r.st==1?"":"s"} seguido${r.st==1?"":"s"}</p>
   <p style="margin:8px 0 2px">${esc(r.rest)}</p><p class="mu" style="margin:0">${esc(r.rec)}</p>
   <p class="mu" style="margin:8px 0 0;font-size:12px">${r.cal?"Ainda calibrando: registre mais treinos para a estimativa melhorar. ":""}Estimativa pelos treinos que você conclui (tempo × intensidade). Não é aparelho médico.</p></section>`}
-function Home(){
-  let m=mon(new Date()),w=wk(m),h=new Date().getHours(),g=h<12?"Bom dia":h<18?"Boa tarde":"Boa noite",C=2*Math.PI*44,pct=w.pl?Math.round(w.dn/w.pl*100):0,nx=next();
+function WeekStats(){
+  let m=mon(new Date()),w=wk(m),C=2*Math.PI*44,pct=w.pl?Math.round(w.dn/w.pl*100):0;
   let mx=Math.max(1,...S.plan.map(a=>a.length));
   let bars=AB.map((a,i)=>{let p=S.plan[i].length,n=done(ds(add(m,i))).length;
     return `<div><div class="bk"><i style="height:${p/mx*100}%"><u style="height:${p?Math.min(1,n/p)*100:0}%"></u></i></div><small>${a}</small></div>`}).join("");
-  return `<header class="cy-hero"><div class="cy-top"><span class="cy-mark">TREINO<span> / NORTE FLOW</span></span><span class="cy-live"><i></i> SISTEMA ATIVO</span></div><div class="cy-hero-main"><div><div class="cy-eyebrow">${g.toUpperCase()}${S.name?", "+esc(S.name).toUpperCase():""}</div><h1>DISCIPLINA<br><em>É O CAMINHO.</em></h1><p class="cy-date">${esc(new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}))}</p></div><img class="cy-logo" src="logo.png" alt="Norte Flow Jiu-Jitsu" width="84" height="79"></div><div class="cy-lines"></div></header>
-  ${Motiv()}${CompCard()}<section class="card cy-stats"><div class="ringrow"><svg class="ring" viewBox="0 0 100 100" role="img" aria-label="${pct}% da semana concluído"><circle cx="50" cy="50" r="44" class="rb"/><circle cx="50" cy="50" r="44" class="rf" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" class="rt">${pct}%</text></svg>
+  return `<section class="card cy-stats"><div class="ringrow"><svg class="ring" viewBox="0 0 100 100" role="img" aria-label="${pct}% da semana concluído"><circle cx="50" cy="50" r="44" class="rb"/><circle cx="50" cy="50" r="44" class="rf" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" class="rt">${pct}%</text></svg>
   <div class="kp"><div><b>${w.dn}</b><span>Concluídos</span></div><div><b>${w.pe}</b><span>Pendentes</span></div><div><b>${streak()}</b><span>Sequência</span></div></div></div>
   <p class="mu cy-caption">${w.pl?`SEMANA: ${w.dn} / ${w.pl} SESSÕES · ${w.min?fm(w.min):"0 MIN"} ATIVOS`:"SEM TREINOS PROGRAMADOS ESTA SEMANA."}</p></section>
-  <section class="card cy-next"><div class="cy-section"><span class="cy-pulse"></span> PRÓXIMA MISSÃO</div>${nx?`<div class="nx" style="--c:${CATS[nx.x.t]||"#999"}"><div><small>${nx.i==0?"Hoje":nx.i==1?"Amanhã":DAYS[wd(nx.d)]}${nx.x.h?" às "+esc(nx.x.h):""}</small><b>${esc(nx.x.n||nx.x.t)}</b><small>${esc(nx.x.t)}${nx.x.d?" · "+esc(nx.x.d)+" min":""}</small></div><button class="b pri cy-button" data-a="goto" data-k="${nx.k}">ACESSAR ↗</button></div>`:`<div class="empty"><b>Nenhum treino pendente</b><p>Monte seu cronograma na aba Agenda.</p><button class="b pri" data-a="tab" data-t="ag">Abrir agenda</button></div>`}</section>
-  <section class="card cy-week"><div class="cy-section">// STATUS DA SEMANA</div><div class="bars">${bars}</div><p class="mu" style="margin-top:8px;font-size:13px">Barra vazia: treinos programados. Preenchida: concluídos.</p></section>
-  ${Rcv()}${Coach(ds(new Date()))}<section class="card cy-rest"><div class="cy-section">// CRONÔMETRO</div><div class="tp"><button class="b pri cy-button" data-a="tab" data-t="cr">ABRIR CRONÔMETRO DE ROUNDS</button></div></section>`;
-}
-
+  <section class="card cy-week"><div class="cy-section">// STATUS DA SEMANA</div><div class="bars">${bars}</div><p class="mu" style="margin-top:8px;font-size:13px">Barra vazia: treinos programados. Preenchida: concluídos.</p></section>`}
+function MotivMini(){let m=Motiv().match(/<p[^>]*>([\s\S]*?)<\/p>/);return m?`<p class="mu" style="text-align:center;font-size:13px;font-style:italic;margin:14px 10px 0">${m[1]}</p>`:""}
+function RcvMini(){let r=rcv(),c=r.n<35?"#ff5a4d":r.n<55?"#ff8a3d":r.n<75?"#ffb020":"#3ddc84",C=2*Math.PI*44;
+  return `<section class="card"><div class="cy-section">// RECUPERAÇÃO</div><div class="ringrow"><svg class="ring" viewBox="0 0 100 100" role="img" aria-label="Prontidão ${r.n} de 100"><circle cx="50" cy="50" r="44" class="rb"/><circle cx="50" cy="50" r="44" class="rf" style="stroke:${c}" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-r.n/100)}" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle" class="rt">${r.n}</text></svg><div><b style="color:${c}">${r.lb}</b><p class="mu" style="margin:4px 0 0">${r.tip}</p></div></div></section>`}
+function Home(){
+  let h=new Date().getHours(),g=h<12?"Bom dia":h<18?"Boa tarde":"Boa noite",nx=next(),w=wk(mon(new Date()));
+  return `<header class="cy-hero"><div class="cy-top"><span class="cy-mark">TREINO<span> / NORTE FLOW</span></span><span class="cy-live"><i></i> SISTEMA ATIVO</span></div><div class="cy-hero-main"><div><div class="cy-eyebrow">${g.toUpperCase()}${S.name?", "+esc(S.name).toUpperCase():""}</div><p class="cy-date">${esc(new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}))}</p></div><img class="cy-logo" src="logo.png" alt="Norte Flow Jiu-Jitsu" width="64" height="60"></div></header>
+  ${CompCard()}<section class="card cy-next"><div class="cy-section"><span class="cy-pulse"></span> PRÓXIMA MISSÃO</div>${nx?`<div class="nx" style="--c:${CATS[nx.x.t]||"#999"}"><div><small>${nx.i==0?"Hoje":nx.i==1?"Amanhã":DAYS[wd(nx.d)]}${nx.x.h?" às "+esc(nx.x.h):""}</small><b>${esc(nx.x.n||nx.x.t)}</b><small>${esc(nx.x.t)}${nx.x.d?" · "+esc(nx.x.d)+" min":""}</small></div><button class="b pri cy-button" data-a="goto" data-k="${nx.k}">ACESSAR ↗</button></div>`:`<div class="empty"><b>Nenhum treino pendente</b><p>Monte seu cronograma na aba Agenda.</p><button class="b pri" data-a="tab" data-t="ag">Abrir agenda</button></div>`}<p class="mu cy-caption" style="margin-top:8px">${w.pl?`SEMANA: ${w.dn} / ${w.pl} SESSÕES`:"SEM TREINOS PROGRAMADOS ESTA SEMANA."}</p></section>
+  ${Coach(ds(new Date()))}${RcvMini()}${MotivMini()}`}
 function Agenda(){
   return `<h1>Agenda</h1><div class="seg" style="grid-template-columns:1fr 1fr 1fr"><button data-a="mode" data-m="dia" aria-pressed="${V.mode=="dia"}">Dia</button><button data-a="mode" data-m="sem" aria-pressed="${V.mode=="sem"}">Semana</button><button data-a="mode" data-m="mes" aria-pressed="${V.mode=="mes"}">Mês</button></div>`+(V.mode=="dia"?Dia():V.mode=="sem"?Sem():Mes());
 }
@@ -417,9 +423,9 @@ function DayBody(k){
   let d=pd(k),i=wd(d),l=S.plan[i],hoje=k==ds(new Date()),n=l.filter(x=>S.log[k]?.[x.id]?.s=="d").length,on=plOn(k),
   chip=on===null?`<button class="chp2" data-a="plset" data-k="${k}">Marcar escala 12x36</button>`:`<button class="chp2 ${on?"pp":"ff"}" data-a="pltg" data-k="${k}" aria-label="${on?"Dia de plantão":"Dia de folga"}. Toque para trocar">${on?"PLANTÃO":"FOLGA"}</button>`,
   tm=l.some(x=>x.h),lab=t=>tm?`<small class="pl2">${t}</small>`:"",body="";
-  PER.forEach(([nm,f])=>{let a=l.filter(x=>x.h&&f(x.h));if(a.length)body+=lab(nm)+a.map(x=>SessC(x,k)).join("")});
+  PER.forEach(([nm,f])=>{let a=l.filter(x=>x.h&&f(x.h));if(a.length)body+=lab(nm)+a.map(x=>inWork(k,x.h)?`<div style="opacity:.45"><small class="pl2">Conflita com o plantão</small>${SessC(x,k)}</div>`:SessC(x,k)).join("")});
   let nh=l.filter(x=>!x.h);if(nh.length)body+=lab("Sem horário")+nh.map(x=>SessC(x,k)).join("");
-  return `<div class="dh"><div><h2>${DAYS[i]}</h2><p class="mu">${esc(d.toLocaleDateString("pt-BR",{day:"numeric",month:"long"}))}${hoje?" · hoje":""} · ${l.length?n+" de "+l.length+" concluído"+(l.length>1?"s":""):"dia livre"}</p></div><div style="display:flex;gap:8px"><button class="b" data-a="mdl" data-d="${i}">Modelos</button><button class="pb" data-a="new" data-d="${i}">+ Treino</button></div></div><div class="cc">${chip}${CompChip(k)}${hoje?CkBtn(k):""}</div>${l.length?body:`<div class="empty"><b>Dia livre</b><p>Nenhum treino programado. Toque em + Treino para adicionar.</p></div>`}${Coach(k,1)}`}
+  return `<div class="dh"><div><h2>${DAYS[i]}</h2><p class="mu">${esc(d.toLocaleDateString("pt-BR",{day:"numeric",month:"long"}))}${hoje?" · hoje":""} · ${l.length?n+" de "+l.length+" concluído"+(l.length>1?"s":""):"dia livre"}</p></div><div style="display:flex;gap:8px"><button class="b" data-a="mdl" data-d="${i}">Modelos</button><button class="pb" data-a="new" data-d="${i}">+ Treino</button></div></div><div class="cc">${chip}${CompChip(k)}${hoje?CkBtn(k):""}</div>${on===true?`<p class="mu" style="margin:0 0 8px;font-size:13px">Plantão das ${WORK[0]} às ${WORK[1]}: sem treino nesse horário.</p>`:""}${l.length?body:`<div class="empty"><b>Dia livre</b><p>Nenhum treino programado. Toque em + Treino para adicionar.</p></div>`}${Coach(k,1)}`}
 function Dia(){let k=V.sel,d=pd(k);
   return `<div class="wn"><button data-a="dd" data-n="-1" aria-label="Dia anterior">‹</button><button data-a="today">${esc(d.toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}))}${k==ds(new Date())?" · hoje":""}</button><button data-a="dd" data-n="1" aria-label="Próximo dia">›</button></div>${DayBody(k)}`}
 function Day(k){return DayBody(k)}
@@ -481,7 +487,8 @@ function MuscleMap(dn){
   if(!Object.keys(c).length&&!un)return `<div class="empty">Cadastre exercícios com nome nos treinos e conclua-os para colorir os músculos trabalhados.</div>`;
   return `<div class="seg" style="margin:0 0 10px"><button data-a="mv" data-v="f" aria-pressed="${V.mv!="b"}">Frente</button><button data-a="mv" data-v="b" aria-pressed="${V.mv=="b"}">Costas</button></div><div class="vit">${V.mv=="b"?sv(BK,"Costas"):sv(FR,"Frente")}</div><div class="lg"></div><div style="display:flex;justify-content:space-between"><small class="mu">Menos</small><small class="mu">Mais</small></div>${info}${un?`<p class="mu" style="font-size:13px">${un} exercício${un>1?"s":""} sem grupo muscular reconhecido.</p>`:""}`;
 }
-function Evol(){
+function Evol(){return WeekStats()+Rcv()+Evol0()}
+function Evol0(){
   let m=mon(new Date()),W=[...Array(8)].map((_,i)=>wk(add(m,-7*(7-i)))),c=W[7],p=W[6],al=[];
   Object.keys(S.log).sort().forEach(k=>Object.values(S.log[k]).forEach(e=>al.push({k,...e})));
   let dn=al.filter(e=>e.s=="d"),mn=dn.reduce((a,e)=>a+e.m,0),l30=dn.filter(e=>pd(e.k)>=add(new Date(),-30)).length;
@@ -513,9 +520,13 @@ function Ajustes(){
   <section class="card"><h3>Tema</h3><div class="seg" style="margin:0"><button data-a="theme" data-v="dark" aria-pressed="${S.theme!="light"}">Escuro</button><button data-a="theme" data-v="light" aria-pressed="${S.theme=="light"}">Claro</button></div></section>
   ${KneeCfg()}${CompCfg()}${Escala()}${Lembretes()}${Conta()}<section class="card"><h3>Dados</h3><p class="mu">Tudo fica salvo neste aparelho. Faça backup de vez em quando.</p><div class="row"><button class="b" data-a="bk">Salvar backup</button><button class="b" data-a="rs">Restaurar backup</button></div><div class="row"><button class="b" data-a="exp">Exportar histórico</button><button class="b" data-a="wipe">Apagar tudo</button></div></section>`;
 }
+/* ---------- grade da equipe e atalhos ---------- */
+const GRD=[{t:"Jiu-Jitsu",n:"Aula de jiu-jitsu",h:"19:00",d:"60",days:[0,1,2,3,4,5,6]},{t:"Jiu-Jitsu",n:"Aula de jiu-jitsu",h:"20:00",d:"60",days:[0,1,2,3,4,5,6]},{t:"Luta livre",n:"Aula de luta livre",h:"09:30",d:"60",days:[0,2,4]},{t:"Luta livre",n:"Aula de luta livre",h:"21:00",d:"60",days:[1,3]}],GRADE=()=>S.grade||GRD;
+function Quick(){let G=GRADE(),dk=ds(add(mon(pd(V.sel)),E.day)),g=G.map((a,i)=>[a,i]).filter(([a])=>a.days.includes(E.day)&&!inWork(dk,a.h)),u=(S.tpl||[]).slice(0,8);
+  return (plOn(dk)===true?`<p class="mu" style="font-size:13px;margin:0 0 6px">Dia de plantão: sem treino das ${WORK[0]} às ${WORK[1]}.</p>`:"")+(g.length?`<small class="mu">Aulas da equipe neste dia</small><div class="pre">${g.map(([a,i])=>`<button class="b" type="button" data-a="qg" data-i="${i}">${esc(a.t)} · ${esc(a.h)}</button>`).join("")}</div>`:"")+(u.length?`<small class="mu">Meus modelos (um toque preenche tudo)</small><div class="pre">${u.map(t=>`<button class="b" type="button" data-a="qm" data-id="${t.id}">${esc(t.n)}</button>`).join("")}</div>`:"")}
 function Ed(){
   let x=E.x;
-  return `<div class="sheet"><h2>${E.isNew?"Novo treino":"Editar treino"}</h2>
+  return `<div class="sheet"><h2>${E.isNew?"Novo treino":"Editar treino"}</h2>${E.isNew?Quick():""}
   <label for="f-n">Nome</label><input id="f-n" value="${esc(x.n)}" placeholder="Ex.: Treino de guarda" maxlength="60">
   <div class="g2"><div><label for="f-t">Categoria</label><select id="f-t">${Object.keys(CATS).map(c=>`<option${c==x.t?" selected":""}>${c}</option>`).join("")}</select></div>
   <div><label for="f-day">Dia</label><select id="f-day">${DAYS.map((d,i)=>`<option value="${i}"${i==E.day?" selected":""}>${d}</option>`).join("")}</select></div>
@@ -613,7 +624,7 @@ function rfsClose(){let f=$("#rdfs");if(f)f.hidden=true;try{if(document.fullscre
 // lembretes 1h antes
 function ntf(t,b,tag){let o={body:b,tag:tag,icon:"logo.png",vibrate:[200,100,200]},fb=()=>{try{new Notification(t,o)}catch(e){}};try{navigator.serviceWorker?navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(t,o):fb()).catch(fb):fb()}catch(e){fb()}}
 function ntfCheck(){if(!("Notification" in window)||Notification.permission!="granted"||!S||!S.plan)return;let now=new Date(),k=ds(now),L=S.log[k]||{};
-  (S.plan[wd(now)]||[]).forEach(x=>{if(!x.h||L[x.id])return;let[hh,mm]=x.h.split(":"),st=new Date(now.getFullYear(),now.getMonth(),now.getDate(),+hh,+mm),mins=Math.round((st-now)/60000);
+  (S.plan[wd(now)]||[]).forEach(x=>{if(!x.h||L[x.id]||inWork(ds(now),x.h))return;let[hh,mm]=x.h.split(":"),st=new Date(now.getFullYear(),now.getMonth(),now.getDate(),+hh,+mm),mins=Math.round((st-now)/60000);
     if(!(mins>0&&mins<=60))return;let key="nf-n-"+k+"-"+x.id;try{if(localStorage.getItem(key))return;localStorage.setItem(key,"1")}catch(e){}
     ntf(mins>=55?"Treino em 1 hora":"Treino em "+mins+" min",(x.n||x.t)+" às "+x.h,key)})}
 setInterval(ntfCheck,30000);setTimeout(ntfCheck,2500);document.addEventListener("visibilitychange",()=>{if(!document.hidden)ntfCheck()});
@@ -765,6 +776,7 @@ p:["Dia de plantão: hidrate, coma bem e descanse quando der. Isso também é pr
 function Motiv(t){t=t||new Date();let k=ds(t),n=Math.floor(Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())/864e5),K=KON()?kst(k):null,
   rc=K&&(K.kr||K.kn>=2||K.ac),pool=rc?MSG.r:plOn(k)?MSG.p:MSG.g;
   return `<section class="card"><div class="cy-section">// MENSAGEM DO DIA</div><p style="font:600 23px/1.25 'Barlow Condensed',sans-serif;letter-spacing:.02em;margin:0">${esc(pool[n%pool.length])}</p></section>`}
+const WORK=["07:00","19:00"],inWork=(k,h)=>!!h&&plOn(k)===true&&h>=WORK[0]&&h<WORK[1];
 function plOn(k){if(S.pl===undefined){S.pl={ref:"2026-11-23",x:{}};try{save()}catch(e){}}let p=S.pl;if(!p)return null;if(p.x&&p.x[k]!==undefined)return !!p.x[k];if(!p.ref)return null;return Math.round((pd(k)-pd(p.ref))/864e5)%2==0}
 function rec(k){if(plOn(k))return{r:REC.bjj,tip:"Você sai do plantão direto para o jiu-jitsu. Evite força pesada hoje: hidrate, coma algo leve antes e priorize o sono."};
   let n=Math.round((pd(k)-pd(S.pl.ref))/864e5),id=["fa","fb","mob"][((Math.floor(n/2)%3)+3)%3];
@@ -795,6 +807,8 @@ const A={
     if(c&&c.s==d.s){delete L[d.id];if(!Object.keys(L).length)delete S.log[d.k]}
     else{L[d.id]={s:d.s,t:x.t,n:x.n,m:num(x.d),i:x.i,ex:x.ex.filter(e=>e.n).map(e=>({n:e.n,w:num(e.w)}))};if(d.s=="d")toast("Treino concluído! 💪")}
     save();render();if(d.s=="d"&&S.log[d.k]&&S.log[d.k][d.id]&&KON()&&d.k==ds(new Date())&&AFT(x))A.ck({k:d.k,after:1})},
+  qg:d=>{harvest();let a=GRADE()[+d.i];if(!a)return;Object.assign(E.x,{t:a.t,n:a.n,h:a.h,d:a.d});M(Ed())},
+  qm:d=>{harvest();let t=(S.tpl||[]).find(y=>y.id==d.id);if(!t)return;Object.assign(E.x,{n:t.n,t:t.t,d:t.d||"",i:t.i||"",o:t.o||"",ex:clone(t.ex||[])});M(Ed())},
   new:d=>edit({id:uid(),t:"Jiu-Jitsu",n:"",h:d.h||"",d:"",o:"",i:"",ex:[]},+d.d,true),
   ed:d=>{let[i,x]=find(d.id);edit(clone(x),i,false)},
   dup:d=>{let[i,x]=find(d.id),c=clone(x);c.id=uid();c.n=(x.n||x.t)+" (cópia)";edit(c,i,true)},
@@ -874,7 +888,7 @@ document.addEventListener("change",e=>{let t=e.target,c=t.dataset.c;if(!c)return
   if(c=="name")S.name=t.value.trim();if(c=="kgoal"){S.kj=S.kj||{on:1};S.kj.goal=Math.max(1,Math.min(7,Math.floor(num(t.value))||3))}if(c=="plref"&&t.value)S.pl={ref:t.value,x:{}};if(c=="goal")S.goal=Math.max(0,Math.floor(num(t.value)));if(c=="ex")V.ex=t.value;save();render()});
 document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.id=="lg-p"){A.login();return}if(e.key=="Escape"&&!$("#modal").hidden)closeM();if((e.key=="Enter"||e.key==" ")&&e.target.matches&&e.target.matches("g[data-a]")){e.preventDefault();A[e.target.dataset.a](e.target.dataset)}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&U&&$("#modal").hidden)pull()});addEventListener("online",()=>{if(U)pull()});
-load();render();boot();
+load();nz();render();boot();
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
 </script>
 </body>
