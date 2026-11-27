@@ -299,7 +299,7 @@ const fd=k=>k.slice(8)+"/"+k.slice(5,7);
 let S,E=null,CB=null,T=null;
 const CFG=window.NF_CLOUD||{},CLOUD=!!(window.supabase&&/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")&&(CFG.key||"").length>20),sb=CLOUD?window.supabase.createClient(CFG.url,CFG.key):null;
 let U=null,READY=!CLOUD,SY=0,pt=null;
-const VER="2026-11-27-comp1",WHY=CLOUD?"":!window.supabase?"a biblioteca da nuvem não carregou":!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")?"a URL no config.js não está certa":"a chave no config.js não está certa";
+const VER="2026-11-27-grade1",WHY=CLOUD?"":!window.supabase?"a biblioteca da nuvem não carregou":!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(CFG.url||"")?"a URL no config.js não está certa":"a chave no config.js não está certa";
 let V={tab:"home",mode:"dia",week:mon(new Date()),sel:ds(new Date()),month:new Date(),open:null,ex:"",wi:7,mu:""};
 const done=k=>Object.values(S.log[k]||{}).filter(e=>e.s=="d").map(e=>Array.isArray(e.ex)?e:{...e,ex:[]});
 function nz(){try{if(S&&!S.seedCal){S.tpl=S.tpl||[];if(!S.tpl.some(t=>/calist/i.test(t.n)))S.tpl.unshift({id:"cal"+Date.now().toString(36),n:"Calistenia (minha série)",t:"Funcional",d:"45",i:"Moderada",o:"Série fixa. Controle a descida e pare se sentir dor.",ex:[{n:"Barra fixa",s:"5",r:"7",w:"",rest:"90"},{n:"Paralelas",s:"5",r:"10",w:"",rest:"90"},{n:"Barra fixa pronada",s:"5",r:"5",w:"",rest:"90"}]});S.seedCal=1}}catch(e){}
@@ -524,7 +524,7 @@ function Ajustes(){
   ${KneeCfg()}${CompCfg()}${Escala()}${Lembretes()}${Conta()}<section class="card"><h3>Dados</h3><p class="mu">Tudo fica salvo neste aparelho. Faça backup de vez em quando.</p><div class="row"><button class="b" data-a="bk">Salvar backup</button><button class="b" data-a="rs">Restaurar backup</button></div><div class="row"><button class="b" data-a="exp">Exportar histórico</button><button class="b" data-a="wipe">Apagar tudo</button></div></section>`;
 }
 /* ---------- grade da equipe e atalhos ---------- */
-const GRD=[{t:"Jiu-Jitsu",n:"Aula de jiu-jitsu",h:"19:00",d:"60",days:[0,1,2,3,4,5,6]},{t:"Jiu-Jitsu",n:"Aula de jiu-jitsu",h:"20:00",d:"60",days:[0,1,2,3,4,5,6]},{t:"Luta livre",n:"Aula de luta livre",h:"09:30",d:"60",days:[0,2,4]},{t:"Luta livre",n:"Aula de luta livre",h:"21:00",d:"60",days:[1,3]}],GRADE=()=>S.grade||GRD;
+const GRD=[{t:"Jiu-Jitsu",n:"Aula de jiu-jitsu",h:"19:00",d:"60",days:[0,1,2,3,4,5,6]},{t:"Jiu-Jitsu",n:"Aula de jiu-jitsu",h:"20:00",d:"60",days:[0,1,2,3,4,5,6]},{t:"Luta livre",n:"Aula de luta livre",h:"09:30",d:"60",days:[0,2,4]},{t:"Luta livre",n:"Aula de luta livre",h:"21:00",d:"60",days:[1,3]},{t:"Luta livre",n:"Aula de luta livre",h:"20:30",d:"60",days:[4]}],GRADE=()=>S.grade||GRD;
 function Quick(){let G=GRADE(),dk=ds(add(mon(pd(V.sel)),E.day)),g=G.map((a,i)=>[a,i]).filter(([a])=>a.days.includes(E.day)&&!inWork(dk,a.h)),u=(S.tpl||[]).slice(0,8);
   return (plOn(dk)===true?`<p class="mu" style="font-size:13px;margin:0 0 6px">Dia de plantão: sem treino das ${WORK[0]} às ${WORK[1]}.</p>`:"")+(g.length?`<small class="mu">Aulas da equipe neste dia</small><div class="pre">${g.map(([a,i])=>`<button class="b" type="button" data-a="qg" data-i="${i}">${esc(a.t)} · ${esc(a.h)}</button>`).join("")}</div>`:"")+(u.length?`<small class="mu">Meus modelos (um toque preenche tudo)</small><div class="pre">${u.map(t=>`<button class="b" type="button" data-a="qm" data-id="${t.id}">${esc(t.n)}</button>`).join("")}</div>`:"")}
 function Ed(){
@@ -632,7 +632,7 @@ function ntfCheck(){if(!("Notification" in window)||Notification.permission!="gr
     ntf(mins>=55?"Treino em 1 hora":"Treino em "+mins+" min",(x.n||x.t)+" às "+x.h,key)})}
 setInterval(ntfCheck,30000);setTimeout(ntfCheck,2500);document.addEventListener("visibilitychange",()=>{if(!document.hidden)ntfCheck()});
 function Lembretes(){let p="Notification" in window?Notification.permission:"unsupported";
-  return `<section class="card"><h3>Lembretes de treino</h3><p class="mu">${p=="granted"?"Aviso ativado neste aparelho: 1 hora antes de cada treino que tem horário.":p=="denied"?"As notificações estão bloqueadas. Libere nas configurações do navegador ou do app.":p=="unsupported"?"Este navegador não suporta notificações.":"Receba um aviso 1 hora antes de cada treino que tem horário."}</p><p class="mu" style="font-size:12px">O aviso só aparece com o app aberto ou em segundo plano. Para tocar sempre, mesmo com o app fechado, use o calendário.</p><div class="row">${p=="default"?'<button class="b pri" data-a="ntf">Ativar avisos</button>':""}<button class="b" data-a="ics">Lembretes no calendário</button></div></section>`}
+  return `<section class="card"><h3>Lembretes de treino</h3><p class="mu">${p=="granted"?"Aviso ativado neste aparelho: 1 hora antes de cada treino que tem horário.":p=="denied"?"As notificações estão bloqueadas. Libere nas configurações do navegador ou do app.":p=="unsupported"?"Este navegador não suporta notificações.":"Receba um aviso 1 hora antes de cada treino que tem horário."}</p><p class="mu" style="font-size:12px">O aviso só aparece com o app aberto ou em segundo plano. Para tocar sempre, mesmo com o app fechado, use o calendário.</p><div class="row">${p=="default"?'<button class="b pri" data-a="ntf">Ativar avisos</button>':""}${p=="granted"?'<button class="b pri" data-a="ntft">Testar aviso</button>':""}<button class="b" data-a="ics">Lembretes no calendário</button></div></section>`}
 function icsDate(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00"}
 function icsText(v){return String(v||"").replace(/\\/g,"\\\\").replace(/[,;]/g,m=>"\\"+m).replace(/\r?\n/g,"\\n")}
 function icsMake(){let t0=new Date();t0.setHours(0,0,0,0);let out=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Norte Flow//Treino//PT","CALSCALE:GREGORIAN"],n=0,sk=0,BD=["MO","TU","WE","TH","FR","SA","SU"];
@@ -893,7 +893,7 @@ A.cadd=d=>{let t=REC[d.src];if(t)addT(t,wd(pd(d.k)))};
 
 /* ---------- peso, comida e esforço ---------- */
 function Corpo(){
-  let T=new Date(),t=ds(T),pw=(S.pw||[]).slice().sort((a,b)=>a.k<b.k?-1:1),cur=pw.length?pw[pw.length-1].w:0,meta=S.pm||80,f=(S.fd||{})[t]||{};
+  let T=new Date(),t=ds(T),pw=(S.pw||[]).slice().sort((a,b)=>a.k<b.k?-1:1),cur=pw.length?pw[pw.length-1].w:0,meta=S.pm||82,f=(S.fd||{})[t]||{};
   let av=(a,b)=>{let l=pw.filter(x=>pd(x.k)>=add(T,-b)&&pd(x.k)<=add(T,-a));return l.length?l.reduce((s,x)=>s+x.w,0)/l.length:0};
   let a1=av(0,7),a0=av(8,14),rate=a1&&a0?+(a0-a1).toFixed(2):null;
   let msg=rate===null?"Pese de novo daqui a alguns dias para eu calcular o ritmo.":rate>1?"Caindo rápido demais ("+rate+" kg na semana). Coma um pouco mais para não perder força.":rate>=0.3?"Ritmo bom ("+rate+" kg na semana). Segue assim.":rate>0?"Queda leve ("+rate+" kg na semana). Dá para ajustar se quiser acelerar.":"Sem queda esta semana. É normal oscilar, avalie de novo na próxima.";
@@ -911,7 +911,7 @@ function Corpo(){
 function PseAsk(k,id){M(`<div class="sheet"><h2>Quão pesado foi?</h2><p class="mu" style="margin-top:0">1 leve · 10 no limite</p><div class="row" style="flex-wrap:wrap;gap:8px">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button class="b" data-a="pse" data-k="${k}" data-id="${id}" data-v="${n}" style="min-width:52px">${n}</button>`).join("")}</div><div class="row" style="margin-top:12px"><button class="b" data-a="close">Pular</button></div></div>`)}
 A.pse=d=>{let e=(S.log[d.k]||{})[d.id];if(e){e.pse=+d.v;save()}closeM();render();toast("Esforço salvo")};
 A.pwadd=()=>{let v=parseFloat(($("#pw-i").value||"").replace(",","."));if(!(v>30&&v<300))return toast("Digite um peso válido");let t=ds(new Date());S.pw=(S.pw||[]).filter(x=>x.k!=t);S.pw.push({k:t,w:+v.toFixed(1)});save();render();toast("Peso salvo")};
-A.pmset=()=>{let v=parseFloat((prompt("Meta de peso (kg)",S.pm||80)||"").replace(",","."));if(!(v>30&&v<300))return;S.pm=+v.toFixed(1);save();render()};
+A.pmset=()=>{let v=parseFloat((prompt("Meta de peso (kg)",S.pm||82)||"").replace(",","."));if(!(v>30&&v<300))return;S.pm=+v.toFixed(1);save();render()};
 A.fd=d=>{let t=ds(new Date());S.fd=S.fd||{};let o=S.fd[t]=S.fd[t]||{};if(d.v=="c")o.c=o.c?0:1;else if(d.v=="p")o.p=o.p?0:1;else o.a=Math.max(0,(o.a||0)+(d.v=="a+"?1:-1));save();render()};
 {let o=A.st;A.st=d=>{let w=(S.log[d.k]||{})[d.id],was=w&&w.s=="d";o(d);let n=(S.log[d.k]||{})[d.id];if(n&&n.s=="d"&&!was)setTimeout(()=>{if($("#modal").hidden)PseAsk(d.k,d.id)},80)}}
 document.addEventListener("toggle",e=>{if(e.target.id=="mais")V.mais=e.target.open},true);
@@ -947,6 +947,7 @@ function Tf(){let tf=tfs(),l=tf[tf.length-1],p=tf[tf.length-2],k=V.tf||"b",
 A.tfv=d=>{V.tf=d.v;render()};
 A.tfadd=()=>{let t=ds(new Date()),e={k:t},n=0;["b","p","f"].forEach(c=>{let v=parseInt($("#tf-"+c).value,10);if(v>=0&&v<=300){e[c]=v;n++}});
   if(!n)return toast("Digite pelo menos um exercício");S.tf=tfs().filter(x=>x.k!=t);S.tf.push(e);save();render();toast("Teste salvo")};
+A.ntft=async()=>{try{let r=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(!r)return toast("Sem service worker (sw.js): o aviso não aparece neste celular");await r.showNotification("Teste de aviso",{body:"Se você está vendo isso, as notificações funcionam.",icon:"logo.png"});toast("Aviso enviado. Olhe a barra de notificações.")}catch(e){toast("Falhou: "+((e&&e.message)||"erro"))}};
 document.addEventListener("click",e=>{if(e.target.id=="modal")return closeM();let b=e.target.closest("[data-a]");if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset)});
 document.addEventListener("change",e=>{let t=e.target,c=t.dataset.c;if(!c)return;
   if(c=="name")S.name=t.value.trim();if(c=="kgoal"){S.kj=S.kj||{on:1};S.kj.goal=Math.max(1,Math.min(7,Math.floor(num(t.value))||3))}if(c=="plref"&&t.value)S.pl={ref:t.value,x:{}};if(c=="goal")S.goal=Math.max(0,Math.floor(num(t.value)));if(c=="ex")V.ex=t.value;save();render()});
